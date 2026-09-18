@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보완 요청 멘트 검색기 · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+<style>
+  :root {
+    --color-black: #000000;
+    --color-white: #FFFFFF;
+
+    --color-brand-50: #EBF0FA;
+    --color-brand-100: #E0E8F7;
+    --color-brand-200: #C0D0EF;
+    --color-brand-300: #3366CC;
+    --color-brand-400: #2E5CB8;
+    --color-brand-500: #2952A3;
+    --color-brand-600: #264D99;
+    --color-brand-700: #1F3D7A;
+    --color-brand-800: #172E5C;
+    --color-brand-900: #122447;
+
+    --color-orange-50: #FFF7E6;
+    --color-orange-100: #FFF3D9;
+    --color-orange-200: #FFE6B0;
+    --color-orange-300: #FFAE00;
+    --color-orange-400: #E69D00;
+    --color-orange-500: #CC8B00;
+    --color-orange-600: #BF8300;
+    --color-orange-700: #996800;
+    --color-orange-900: #664500;
+
+    --color-green-50: #EBFCF3;
+    --color-green-100: #E0FBEC;
+    --color-green-200: #BFF6D9;
+    --color-green-300: #32E283;
+    --color-green-400: #2DCB76;
+    --color-green-500: #28B569;
+    --color-green-600: #229957;
+
+    --color-gray-50: #F9FAFC;
+    --color-gray-100: #F2F4F5;
+    --color-gray-200: #D7DDE4;
+    --color-gray-300: #C2C9D0;
+    --color-gray-400: #A6ADB4;
+    --color-gray-500: #868C92;
+    --color-gray-600: #5C6168;
+    --color-gray-700: #3A4045;
+    --color-gray-800: #242B36;
+    --color-gray-900: #171C23;
+
+    --color-red-50: #FFECEB;
+    --color-red-100: #FFE2E1;
+    --color-red-300: #FF3F35;
+    --color-red-500: #CC322A;
+
+    --color-blue-50: #E7F8FF;
+    --color-blue-100: #DAF4FF;
+    --color-blue-300: #0AB5FF;
+    --color-blue-500: #0891CC;
+
+    --font-size-3xs: 0.625rem;
+    --font-size-2xs: 0.6875rem;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.375rem;
+    --font-size-3xl: 1.5rem;
+
+    --leading-tight: 1.3;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.7;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --spacing-xs: .5rem;
+    --spacing-sm: .75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+
+    --radius-xs: 0.5rem;
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-2xs: 0.25rem;
+    --radius-full: 999rem;
+
+    --shadow-sm: 0 1px 3px rgba(23, 28, 35, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(23, 28, 35, 0.07);
+
+    --font-multilingual: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-800);
+    font-family: 'Noto Sans KR', var(--font-multilingual);
+    font-size: var(--font-size-sm);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { display: flex; min-height: 100vh; }
+  
+  /* Sidebar Rail */
+  .rail {
+    width: 260px; flex: none;
+    background-color: var(--color-brand-900);
+    color: var(--color-gray-100);
+    padding: var(--spacing-xl) 0;
+    position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .rail-brand {
+    padding: 0 var(--spacing-lg) var(--spacing-md);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: var(--spacing-xs);
+  }
+  .rail-brand .mark { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-white); }
+  .rail-brand .sub { font-size: var(--font-size-2xs); color: var(--color-gray-400); margin-top: 4px; }
+  .mobile-settings-btn { display: none; }
+  
+  /* Search Box */
+  .search-box-wrap {
+    padding: 0 var(--spacing-md) var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+  }
+  .search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: var(--radius-xs);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--color-white);
+    font-size: var(--font-size-xs);
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .search-input::placeholder { color: var(--color-gray-400); }
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-brand-300);
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .rail-nav { padding: var(--spacing-xs) var(--spacing-sm); flex: 1; }
+  .rail-settings { margin: var(--spacing-md); padding: var(--spacing-sm); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius-xs); }
+  .rail-settings summary { color: var(--color-gray-200); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); cursor: pointer; }
+  .rail-settings label { display: block; margin: 8px 0 3px; color: var(--color-gray-300); font-size: 10px; }
+  .rail-settings .form-control { padding: 7px 9px; font-size: 11px; background: rgba(255,255,255,0.92); }
+  .rail-settings-note { display: block; margin-top: 8px; color: var(--color-gray-400); font-size: 10px; line-height: 1.4; }
+  .rail-item {
+    display: flex; align-items: center; gap: var(--spacing-sm);
+    width: 100%; text-align: left; background: none; border: none;
+    color: var(--color-gray-300); font-family: inherit; font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium); padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 44px; height: 44px; border-radius: var(--radius-xs); cursor: pointer; margin-bottom: 4px;
+    transition: all 0.15s ease;
+  }
+  .rail-item .n { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: var(--font-size-xs); color: var(--color-brand-200); opacity: 0.6; min-width: 18px; }
+  .rail-item:hover { background-color: rgba(255,255,255,0.08); color: var(--color-white); }
+  .rail-item.active { background-color: var(--color-brand-300); color: var(--color-white); font-weight: var(--font-weight-semibold); }
+  .rail-item.active .n { color: var(--color-white); opacity: 1; }
+  
+  .rail-item.special { background-color: rgba(255, 174, 0, 0.15); color: var(--color-orange-200); margin-bottom: 4px; border: 1px dashed var(--color-orange-300); }
+  .rail-item.special.active { background-color: var(--color-orange-400); color: var(--color-gray-900); border-style: solid; }
+  
+  .rail-item.fav-tab { background-color: rgba(235, 240, 250, 0.1); color: #FFE6B0; margin-bottom: var(--spacing-md); }
+  .rail-item.fav-tab.active { background-color: #CC8B00; color: #fff; }
+
+  /* Main Shell */
+  .main { flex: 1; min-width: 0; padding: 2rem 2.5rem; }
+  .main-inner { max-width: 1280px; }
+  .cat-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: var(--spacing-lg); padding-bottom: var(--spacing-md); margin-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--color-gray-900);
+  }
+  .cat-header h1 { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); margin: 0 0 4px; color: var(--color-gray-900); }
+  .cat-header p { margin: 0; color: var(--color-gray-600); font-size: var(--font-size-sm); }
+  .cat-count { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-brand-400); background-color: var(--color-brand-50); padding: 4px 12px; border-radius: var(--radius-full); }
+
+  /* 2열 레이아웃 */
+  .work { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: var(--spacing-xl); align-items: start; }
+
+  /* Left Item List */
+  .group-label { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: var(--font-weight-semibold); color: var(--color-brand-500); text-transform: uppercase; padding: 4px 0; margin: var(--spacing-lg) 0 var(--spacing-xs); border-bottom: 1px solid var(--color-gray-200); }
+  .group-label:first-child { margin-top: 0; }
+  .group-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: var(--font-weight-semibold); color: var(--color-brand-500); text-transform: uppercase; text-align: left; padding: 4px 0; margin: var(--spacing-lg) 0 var(--spacing-xs); background: none; border: none; border-bottom: 1px solid var(--color-gray-200); cursor: pointer; }
+  .group-toggle:first-child { margin-top: 0; }
+  .group-toggle:hover { color: var(--color-brand-700); }
+  .group-toggle-icon { font-size: 11px; transition: transform 0.2s ease; color: var(--color-brand-500); }
+  .item-list { display: flex; flex-direction: column; gap: 8px; }
+  
+  .item-row-wrap { display: flex; align-items: center; gap: 6px; }
+  .item-row { 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    flex: 1; 
+    height: 78px; 
+    text-align: left; 
+    background-color: var(--color-white); 
+    border: 1px solid var(--color-gray-200); 
+    border-radius: var(--radius-xs); 
+    padding: 10px var(--spacing-md); 
+    cursor: pointer; 
+    transition: all 0.15s ease; 
+    box-shadow: var(--shadow-sm); 
+    overflow: hidden;
+  }
+  .item-row:hover { border-color: var(--color-brand-200); background-color: var(--color-brand-50); }
+  .item-row.active { 
+    background-color: var(--color-white); 
+    border-color: var(--color-brand-300); 
+    border-left-width: 4px; 
+    box-shadow: var(--shadow-md); 
+  }
+  .item-row .cond { 
+    font-weight: var(--font-weight-semibold); 
+    font-size: var(--font-size-xs); 
+    color: var(--color-gray-900); 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-row .kr-preview { 
+    color: var(--color-gray-600); 
+    font-size: 12px; 
+    margin-top: 4px; 
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fav-btn {
+    background: none; border: none; font-size: 18px; cursor: pointer; padding: 6px; color: var(--color-gray-300); transition: transform 0.15s, color 0.15s;
+  }
+  .fav-btn:hover { transform: scale(1.2); }
+  .fav-btn.active { color: #FFAE00; }
+
+  /* 우측 고정 영역 */
+  .right-sticky-container {
+    position: sticky; top: var(--spacing-xl);
+    display: flex; flex-direction: column; gap: var(--spacing-md);
+    max-height: calc(100vh - 48px); overflow-y: auto;
+  }
+
+  .mobile-detail-slot { display: none; }
+
+  .detail-card-sticky {
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-white);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    max-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .detail-card-scroll-area {
+    overflow-y: auto;
+    flex: 1;
+  }
+  .detail-empty {
+    border: 2px dashed var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--color-gray-500);
+    background-color: var(--color-white);
+  }
+  .detail-head { padding: var(--spacing-md) var(--spacing-lg); border-bottom: 1px solid var(--color-gray-200); background-color: var(--color-gray-50); }
+  .detail-head .cond-tag { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: var(--font-size-2xs); font-weight: var(--font-weight-semibold); color: var(--color-brand-400); margin-bottom: 4px; }
+  .detail-head .kr-text { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-gray-900); line-height: var(--leading-relaxed); white-space: pre-wrap; }
+  .detail-note { margin: 0; padding: var(--spacing-xs) var(--spacing-lg); background-color: var(--color-blue-50); border-bottom: 1px solid var(--color-blue-100); font-size: var(--font-size-2xs); color: var(--color-blue-500); white-space: pre-wrap; }
+
+  .lang-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: var(--spacing-md) var(--spacing-lg); background-color: var(--color-white); }
+  .lang-chip { font-family: inherit; font-size: var(--font-size-2xs); font-weight: var(--font-weight-medium); background-color: var(--color-gray-100); border: 1px solid var(--color-gray-200); color: var(--color-gray-700); padding: 5px 10px; border-radius: var(--radius-full); cursor: pointer; transition: all 0.15s ease; }
+  .lang-chip:hover { border-color: var(--color-brand-200); color: var(--color-brand-500); }
+  .lang-chip.active { background-color: var(--color-gray-900); border-color: var(--color-gray-900); color: var(--color-white); }
+  .lang-chip.custom-btn { background-color: var(--color-orange-50); border-color: var(--color-orange-200); color: var(--color-orange-700); }
+  .lang-chip.custom-btn.active { background-color: var(--color-orange-400); border-color: var(--color-orange-400); color: var(--color-gray-900); }
+
+  .custom-lang-bar-input { display: flex; align-items: center; gap: 8px; padding: 8px var(--spacing-lg); background-color: var(--color-gray-50); border-top: 1px solid var(--color-gray-200); }
+
+  .result-card-sticky {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-brand-300);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    max-height: 45vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .result-card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background-color: var(--color-brand-50);
+    border-bottom: 1px solid var(--color-brand-100);
+    flex-shrink: 0;
+  }
+  .result-card-head h3 { margin: 0; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-brand-800); }
+  
+  .result-card-scroll-body {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .result-box { background-color: var(--color-gray-50); }
+  .result-block-header { display: flex; justify-content: space-between; align-items: center; padding: 6px var(--spacing-md); background-color: var(--color-gray-100); border-bottom: 1px solid var(--color-gray-200); }
+  .result-block-header .lbl { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: var(--font-size-3xs); font-weight: var(--font-weight-semibold); color: var(--color-gray-600); text-transform: uppercase; }
+  .btn-mini-copy { background-color: var(--color-white); border: 1px solid var(--color-gray-300); color: var(--color-gray-700); font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+  .btn-mini-copy:hover { border-color: var(--color-brand-300); color: var(--color-brand-500); }
+  .btn-mini-copy.copied { background-color: var(--color-green-500); color: #fff; border-color: var(--color-green-500); }
+
+  .result-box .translated { 
+    padding: var(--spacing-md) var(--spacing-lg); 
+    font-family: var(--font-multilingual);
+    font-size: var(--font-size-sm); 
+    font-weight: var(--font-weight-semibold); 
+    color: var(--color-gray-900); 
+    line-height: var(--leading-relaxed); 
+    white-space: pre-wrap; 
+    background-color: var(--color-white); 
+  }
+  .result-box .original { padding: var(--spacing-sm) var(--spacing-lg); font-size: var(--font-size-xs); color: var(--color-gray-700); white-space: pre-wrap; background-color: var(--color-gray-50); }
+  .engine-tag { text-align: right; padding: 4px var(--spacing-lg); font-size: 10px; color: var(--color-gray-400); background-color: var(--color-gray-50); border-top: 1px dashed var(--color-gray-200); }
+
+  .copy-btn { 
+    display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; 
+    background-color: var(--color-brand-300); color: var(--color-white); border: none; 
+    padding: 12px var(--spacing-md); font-weight: var(--font-weight-semibold); 
+    cursor: pointer; transition: all 0.15s; font-size: var(--font-size-xs); flex-shrink: 0;
+  }
+  .copy-btn:hover { background-color: var(--color-brand-400); }
+  .copy-btn.copied { background-color: var(--color-green-500); }
+
+  .ref-panel {
+    background-color: var(--color-white); border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+  }
+  .ref-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-lg); background-color: var(--color-orange-50);
+    border-bottom: 1px solid var(--color-orange-200); cursor: pointer; user-select: none;
+  }
+  .ref-panel-head-title { display: flex; align-items: center; gap: 8px; }
+  .ref-panel-head h3 { margin: 0; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-orange-900); }
+  .ref-toggle-badge { font-size: 10px; font-weight: var(--font-weight-semibold); color: var(--color-orange-700); background-color: var(--color-orange-100); padding: 2px 6px; border-radius: var(--radius-full); }
+  .ref-toggle-icon { font-size: 11px; transition: transform 0.2s ease; color: var(--color-orange-700); }
+  .ref-panel.collapsed .ref-toggle-icon { transform: rotate(-90deg); }
+  .ref-panel.collapsed .ref-panel-body { display: none; }
+  
+  .ref-block { padding: var(--spacing-sm) var(--spacing-lg); border-bottom: 1px solid var(--color-gray-200); }
+  .ref-block:last-child { border-bottom: none; }
+  .ref-block h4 { margin: 0 0 4px; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-gray-900); }
+  .ref-line { font-size: var(--font-size-2xs); color: var(--color-gray-600); margin: 0 0 4px; }
+  .ref-formula { background-color: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--radius-2xs); padding: 6px 10px; font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 11px; color: var(--color-brand-600); margin-bottom: 6px; }
+  .ref-list { margin: 0 0 var(--spacing-xs); padding-left: 18px; }
+  .ref-list li { font-size: var(--font-size-2xs); color: var(--color-gray-600); margin-bottom: 2px; }
+
+  .table-scroll-container { overflow-x: auto; border: 1px solid var(--color-gray-200); border-radius: var(--radius-xs); margin-top: 6px; }
+  table.ref-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+  table.ref-table th { background-color: var(--color-gray-100); padding: 6px 8px; border-bottom: 1px solid var(--color-gray-200); font-weight: var(--font-weight-bold); color: var(--color-gray-800); white-space: nowrap; }
+  table.ref-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-gray-100); color: var(--color-gray-700); vertical-align: top; line-height: 1.3; }
+  table.ref-table tr:nth-child(even) td { background-color: var(--color-gray-50); }
+  table.ref-table tr:last-child td { border-bottom: none; }
+  
+  .badge-highlight { display: inline-block; padding: 1px 4px; border-radius: 3px; font-weight: 600; font-size: 10px; }
+  .badge-highlight.important { background-color: var(--color-red-50); color: var(--color-red-500); border: 1px solid var(--color-red-100); }
+  .badge-highlight.pass { background-color: var(--color-green-50); color: var(--color-green-500); }
+
+  /* Translator View */
+  .translator-card { background-color: var(--color-white); border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm); padding: var(--spacing-xl); box-shadow: var(--shadow-md); }
+  .form-group { margin-bottom: var(--spacing-lg); }
+  .form-group label { display: block; font-weight: var(--font-weight-semibold); font-size: var(--font-size-xs); color: var(--color-gray-800); margin-bottom: 6px; }
+  .form-control { width: 100%; border: 1px solid var(--color-gray-200); border-radius: var(--radius-xs); padding: 10px 14px; font-family: inherit; font-size: var(--font-size-sm); background-color: var(--color-gray-50); transition: all 0.15s; }
+  .form-control:focus { outline: none; border-color: var(--color-brand-300); background-color: var(--color-white); box-shadow: 0 0 0 3px var(--color-brand-50); }
+  textarea.form-control { min-height: 100px; resize: vertical; line-height: var(--leading-relaxed); }
+  
+  .lang-select-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .lang-opt-btn { background-color: var(--color-gray-50); border: 1px solid var(--color-gray-200); padding: 8px 12px; border-radius: var(--radius-xs); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); cursor: pointer; text-align: center; transition: all 0.15s; }
+  .lang-opt-btn:hover { border-color: var(--color-brand-200); background-color: var(--color-brand-50); }
+  .lang-opt-btn.active { background-color: var(--color-brand-300); color: var(--color-white); border-color: var(--color-brand-300); font-weight: var(--font-weight-semibold); }
+
+  .custom-input-box { padding: 12px; background-color: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--radius-xs); margin-top: 8px; }
+
+  .tone-checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-brand-700); background-color: var(--color-brand-50); padding: 10px 14px; border-radius: var(--radius-xs); border: 1px solid var(--color-brand-100); margin-top: 8px; }
+  .tone-checkbox-label input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--color-brand-500); }
+
+  .api-settings-box { margin-top: var(--spacing-md); padding: 12px var(--spacing-md); background-color: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--radius-xs); }
+  .api-settings-box summary { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-gray-700); cursor: pointer; }
+
+  .translate-action-btn { width: 100%; background-color: var(--color-brand-400); color: var(--color-white); border: none; border-radius: var(--radius-xs); padding: 12px; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); cursor: pointer; transition: background-color 0.15s; }
+  .translate-action-btn:hover { background-color: var(--color-brand-500); }
+  .translate-action-btn:disabled { background-color: var(--color-gray-300); cursor: not-allowed; }
+
+  .btn-save-custom { background-color: var(--color-green-500); color: #fff; border: none; padding: 6px 12px; border-radius: var(--radius-xs); font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+  .btn-save-custom:hover { background-color: var(--color-green-600); }
+
+  .custom-saved-list { margin-top: var(--spacing-lg); border-top: 1px solid var(--color-gray-200); padding-top: var(--spacing-md); }
+  .custom-saved-item { display: flex; align-items: center; justify-content: space-between; background: var(--color-gray-50); border: 1px solid var(--color-gray-200); padding: 8px 12px; border-radius: var(--radius-xs); margin-bottom: 6px; font-size: 12px; cursor: pointer; }
+  .custom-saved-item:hover { border-color: var(--color-brand-300); background: #fff; }
+
+  @media (max-width: 960px) {
+    .app { flex-direction: column; }
+    .rail { width: 100%; height: auto; position: sticky; top: 0; z-index: 20; padding: var(--spacing-sm) 0; }
+    .rail-brand { position: relative; padding-right: 52px; }
+    .mobile-settings-btn { display: inline-flex; align-items: center; justify-content: center; position: absolute; top: 0; right: var(--spacing-lg); width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.25); border-radius: var(--radius-xs); background: rgba(255,255,255,0.12); color: var(--color-white); font-size: 18px; cursor: pointer; }
+    .mobile-settings-btn:hover { background: rgba(255,255,255,0.22); }
+    .rail-nav { display: flex; overflow-x: auto; gap: 4px; padding: 4px var(--spacing-md); }
+    .rail-item { white-space: nowrap; margin-bottom: 0; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .work { grid-template-columns: 1fr; }
+    .right-sticky-container { position: static; max-height: none; }
+    .detail-card-sticky, .result-card-sticky { max-height: none; }
+    .right-sticky-container { display: none; }
+    .mobile-detail-slot { display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-md); }
+    .rail-settings { display: none; position: absolute; top: 56px; right: var(--spacing-md); z-index: 30; width: min(320px, calc(100% - 2 * var(--spacing-md))); margin: 0; background: var(--color-brand-900); box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+    .rail-settings[open] { display: block; }
+    .rail-settings summary { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="rail-brand">
+      <div class="mark">보완 요청 멘트 검색기</div>
+      <div class="sub">Admin · 서류 검수 가이드</div>
+      <button class="mobile-settings-btn" type="button" aria-label="설정 열기" aria-expanded="false" title="설정 열기" onclick="toggleSettings()">⚙</button>
+    </div>
+    
+    <div class="search-box-wrap">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 멘트/키워드 검색..." oninput="handleSearch(this.value)">
+    </div>
+
+    <nav class="rail-nav" id="railNav"></nav>
+    <details class="rail-settings" id="settingsPanel">
+      <summary>⚙ 설정</summary>
+      <div style="margin-top:8px;">
+        <label for="railGeminiApiKey">Gemini API Key</label>
+        <input id="railGeminiApiKey" type="password" class="form-control" placeholder="AIzaSy..." value="">
+        <label for="railClaudeApiKey">Claude API Key</label>
+        <input id="railClaudeApiKey" type="password" class="form-control" placeholder="sk-ant-api..." value="">
+        <span class="rail-settings-note">입력한 키는 현재 브라우저 세션에서만 사용됩니다.</span>
+      </div>
+    </details>
+  </aside>
+
+  <main class="main">
+    <div class="main-inner" id="mainInner"></div>
+  </main>
+</div>
+
+<script id="app-data" type="application/json">
+{"langs": [["en", "영어 (English)"], ["zh", "중국어 (中文)"], ["ja", "일본어 (日本語)"], ["vi", "베트남어 (Tiếng Việt)"], ["ne", "네팔어 (नेपाली)"], ["uz", "우즈베크어 (Oʻzbek)"], ["mn", "몽골어 (Монгол)"]], "categories": [{"id": "passport", "name": "여권", "desc": "여권 관련 서류 보완 요청 멘트", "items": [{"condition": "[공통]", "kr": "상단이 잘리지 않은 전체 서류를 제출해주세요.", "t": {"en": "Please submit the entire document with the top not cut off.", "zh": "请提交顶端未被裁剪的完整文件。", "ja": "上部が切れていない全体書類をご提出ください。", "vi": "Vui lòng nộp toàn bộ tài liệu không bị cắt phần phía trên.", "ne": "कृपया माथिको भाग नकाटिएको पूरा कागजात पेश गर्नुहोस्।", "uz": "Iltimos, yuqori qismi kesilmagan to'liq hujjatni taqdim eting.", "mn": "Дээд хэсэг нь тайрагдаагүй бүтэн баримт бичгийг ирүүлнэ үү."}}, {"condition": "[빛 번짐]", "kr": "확인할 수 없는 정보가 있습니다. 모든 정보를 확인할 수 있도록 다시 제출해 주세요.", "t": {"en": "There is some information that cannot be verified. Please resubmit so that all information can be verified.", "zh": "有部分信息无法确认。请重新提交，以便确认所有信息。", "ja": "確認できない情報がございます。すべての情報を確認できるよう、再度ご提出ください。", "vi": "Có một số thông tin không thể xác nhận được. Vui lòng nộp lại để có thể xác nhận toàn bộ thông tin.", "ne": "पुष्टि गर्न नसकिने केही जानकारी छ। सबै जानकारी पुष्टि गर्न सकिने गरी कृपया पुनः पेश गर्नुहोस्।", "uz": "Tasdiqlab bo'lmaydigan ba'zi ma'lumotlar mavjud. Barcha ma'lumotlarni tasdiqlash mumkin bo'lishi uchun, iltimos, qayta topshiring.", "mn": "Шалгах боломжгүй мэдээлэл байна. Бүх мэдээллийг шалгах боломжтойгоор дахин ирүүлнэ үү."}}, {"condition": "[여권 유효기간이 3개월보다 미만일 경우] - 재발급까지 촉박한 경우", "kr": "여권 유효기간이 6개월 미만입니다. 새로운 여권을 재발급했다면 새여권 변경 신고한 후 새여권을 제출해주세요. 새여권을 신청중이고 발급받지 않은 경우 Hikorea에서 여권 기간 내 체류확인서를 작성하여 제출해 주세요. (How to download: Hikorea > 민원서식 > 여권 기간 내 체류확인서)", "t": {"en": "The passport validity period is less than 6 months. If you have been reissued a new passport, please report the change of passport and submit the new passport. If you have applied for a new passport but have not received it yet, please fill out and submit the \"Confirmation of Residence within Passport Period\" (여권 기간 내 체류확인서) from HiKorea. (How to download: HiKorea > Petition Forms (민원서식) > Confirmation of Residence within Passport Period)", "zh": "护照有效期不足6个月。如果您已重新办理了新护照，请在申报新护照变更后提交新护照。如果您正在申请新护照且尚未拿到，请在HiKorea填写并提交《护照期限内滞留确认书》。（下载方法：HiKorea > 民事表格 (민원서식) > 护照期限内滞留确认书 (여권 기간 내 체류확인서)）", "ja": "パスポートの有効期限が6ヶ月未満です。新しいパスポートの再発行を受けた場合は、新パスポートの変更申告を行った後、新しいパスポートをご提出ください。新しいパスポートを申請中でまだ受け取っていない場合は、HiKoreaにて「パスポート期間内滞在確認書」を作成の上、ご提出ください。（ダウンロード方法：HiKorea > 民願書式 (민원서식) > パスポート期間内滞在確認書 (여권 기간 내 체류확인서)）", "vi": "Thời hạn hộ chiếu của bạn còn dưới 6 tháng. Nếu bạn đã được cấp hộ chiếu mới, vui lòng khai báo thay đổi hộ chiếu và nộp hộ chiếu mới. Trong trường hợp bạn đang xin cấp hộ chiếu mới nhưng chưa nhận được, vui lòng viết và nộp \"Giấy xác nhận thời gian cư trú trong thời hạn hộ chiếu\" từ HiKorea. (Cách tải về: HiKorea > Mẫu đơn khiếu nại (민원서식) > Giấy xác nhận thời gian cư trú trong thời hạn hộ chiếu)", "ne": "राहदानीको वैधता अवधि ६ महिनाभन्दा कम छ। यदि तपाईंले नयाँ राहदानी पुन: जारी गर्नुभएको छ भने, कृपया राहदानी परिवर्तनको रिपोर्ट गर्नुहोस् र नयाँ राहदानी पेश गर्नुहोस्। यदि तपाईंले नयाँ राहदानीका लागि आवेदन दिनुभएको छ तर प्राप्त गर्नुभएको छैन भने, कृपया HiKorea बाट \"राहदानी अवधिभित्र बस्ने अनुमति पुष्टि पत्र\" (여권 기간 내 체류확인서) भरेर पेश गर्नुहोस्। (डाउनलोड गर्ने तरिका: HiKorea > निवेदन फारम (민원서식) > राहदानी अवधिभित्र बस्ने अनुमति पुष्टि पत्र)", "uz": "Pasportingizning amal qilish muddati 6 oydan kam. Agar yangi pasport olgan bo'lsangiz, iltimos, pasport o'zgarganligi haqida xabar bering va yangi pasportni taqdim eting. Agar yangi pasportga ariza topshirgan bo'lsangiz-u, lekin hali olmagan bo'lsangiz, HiKoreadan \"Pasport muddati davomida yashashni tasdiqlash hujjati\"ni (여권 기간 내 체류확인서) to'ldirib taqdim eting. (Yuklab olish tartibi: HiKorea > Ariza shakllari (민원서식) > Pasport muddati davomida yashashni tasdiqlash hujjati)", "mn": "Гадаад паспортын хүчинтэй хугацаа 6 сараас бага байна. Хэрэв шинэ гадаад паспорт дахин авсан бол шинэ паспортын өөрчлөлтийг бүртгүүлсний дараа шинэ паспортоо ирүүлнэ үү. Хэрэв шинэ паспорт захиалсан бөгөөд хараахан авч амжаагүй байгаа бол Hikorea-гаас Гадаад паспортын хугацаан дахь оршин суух тодорхойлолтыг бөглөж ирүүлнэ үү. (Татах арга: Hikorea > 민원서식 (Өргөдлийн маягт) > 여권 기간 내 체류확인서)"}}, {"condition": "[여권 변경 신고]", "kr": "여권 변경 신고를 해주시고, 변경 신고를 확인할 수 있는 서류를 제출해 주세요.", "t": {"en": "Please report the passport change, and submit document(s) that can confirm your change report.", "zh": "请申报护照变更，并提交可确认变更申报的文件。", "ja": "パスポートの変更申告を行い、変更申告が確認できる書類をご提出ください。", "vi": "Vui lòng khai báo thay đổi hộ chiếu và nộp giấy tờ xác nhận việc khai báo thay đổi.", "ne": "कृपया राहदानी परिवर्तनको रिपोर्ट गर्नुहोस् र परिवर्तन रिपोर्ट पुष्टि गर्ने कागजातहरू पेश गर्नुहोस्।", "uz": "Iltimos, pasport o'zgarganligi haqida xabar bering va o'zgarish xabarini tasdiqlovchi hujjatlarni taqdim eting.", "mn": "Паспортын өөрчлөлтийг мэдээлж, өөрчлөлтийг баталгаажуулсан баримт бичгийг ирүүлнэ үү."}}], "reference": null}, {"id": "photo", "name": "증명사진", "desc": "증명사진(외국인등록증용) 보완 요청 멘트", "items": [{"condition": "[계속되는 보완으로 비교적 급한 경우]", "kr": "규정에 맞지 않는 사진을 반복해서 제출할 경우 외국인등록증(RC) 발급이 지연될 수 있습니다. 반드시 규격에 맞는 증명사진을 제출해 주세요.", "t": {"en": "Repeatedly submitting photos that do not meet the requirements may delay the processing of your Alien Registration Card (RC). Please be sure to submit a compliant ID photo.", "zh": "如果反复提交不符合规定的照片，外国人登记证（RC）的办理可能会被延误。请务必提交符合规范的证件照。", "ja": "規定に合わない写真を繰り返し提出された場合、外国人登録証（RC）の発行が遅れる可能性がございます。必ず規定を満たした証明写真を提出してください。", "vi": "Nếu liên tục nộp ảnh không đúng quy định, việc cấp Thẻ đăng ký người nước ngoài (RC) có thể bị trì hoãn. Vui lòng nộp ảnh thẻ đúng quy chuẩn.", "ne": "नियम विपरीतका तस्बिरहरू बारम्बार बुझाउनुभएमा विदेशी दर्ता कार्ड (RC) जारी हुने प्रक्रिया ढिलो हुन सक्छ। कृपया अनिवार्य रूपमा नियम अनुसारको प्रमाणिकरण तस्बिर बुझाउनुहोला।", "uz": "Qoidalarga mos kelmaydigan rasmlarni takroran topshirish Chet ellikni ro'yxatga olish guvohnomasini (RC) rasmiylashtirishni kechiktirishi mumkin. Iltimos, albatta talablarga javob beradigan rasmni topshiring.", "mn": "Журамд нийцээгүй зургийг дахин дахин илгээх нь Гадаадын иргэний бүртгэлийн карт (RC) олгох хугацааг хойшлуулж болзошгүй. Тодорхойлолтод нийцсэн паспортын хэмжээтэй зургийг илгээнэ үү."}}, {"condition": "[증명사진 AI 사용한 경우]", "kr": "AI로 생성 또는 수정한 사진으로 보입니다. 외국인등록증(RC)에 사용될 사진인만큼 AI를 사용하지 않은 사진을 제출해 주세요.", "t": {"en": "The photo appears to be AI-generated or modified. As it will be used for your Residence Card (RC), please submit an unedited photo without any AI processing.", "zh": "该照片看起来像是使用AI生成或修改的。由于该照片将用于外国人登录证（RC），请提交一张未经AI处理的照片。", "ja": "AIで生成または修正された写真のように見えます。外国人登録証（RC）に使用される写真ですので、AIを使用していない写真を再提出してください。", "vi": "Hình ảnh có vẻ đã được tạo hoặc chỉnh sửa bằng AI. Vì đây là ảnh sẽ được sử dụng cho Thẻ đăng ký người nước ngoài (RC), vui lòng nộp lại ảnh không sử dụng AI.", "ne": "यो फोटो AI द्वारा बनाइएको वा सम्पादन गरिएको जस्तो देखिन्छ। यो फोटो विदेशी दर्ता कार्ड (RC) को लागि प्रयोग गरिने भएकोले, कृपया AI प्रयोग नगरिएको नयाँ फोटो बुझाउनुहोला।", "uz": "Rasm AI (sun'iy intellekt) orqali yaratilgan yoki tahrirlanganga o'xshaydi. Ushbu rasm Chet ellikni ro'yxatga olish guvohnomasi (RC) uchun ishlatilingani sababli, iltimos, AI ishlatilmagan rasmni qayta topshiring.", "mn": "Энэ нь хиймэл оюун ухаанаар үүсгэгдсэн эсвэл өөрчлөгдсөн зураг бололтой. Энэ зургийг таны Гадаадын иргэний бүртгэлийн картанд (RC) ашиглах тул хиймэл оюун ухаанаар боловсруулагдаагүй зургийг илгээнэ үү."}}, {"condition": "[머리카락으로 인해 귀가 안보일 경우]", "kr": "양쪽 머리카락을 귀 뒤로 넘겨 귀가 잘보이는 증명사진을 제출해주세요.", "t": {"en": "Please submit a photo for registration with both ears clearly visible by tucking your hair behind them.", "zh": "请提交一张将两侧头发塞至耳后，露出双耳的证件照。", "ja": "両方の髪を耳の後ろに掛け、耳がはっきりと見える証明写真を提出してください。", "vi": "Vui lòng nộp ảnh thẻ đã vén tóc ở hai bên ra sau tai, để lộ rõ cả hai tai.", "ne": "कृपया दुवै कान पछाडि कपाल सिउरेर दुवै कान प्रष्ट देखिने प्रमाणिकरण तस्बिर बुझाउनुहोला।", "uz": "Iltimos, ikkala sochingizni qulog'ingiz orqasiga o'tkazib, quloqlaringiz aniq ko'rinadigan sertifikat fotosuratini topshiring.", "mn": "Үсээ чихнийхээ ард хийж тод харагдахаар паспортын зургаа илгээнэ үү."}}, {"condition": "[화장이 너무 과한 경우]", "kr": "제출해 주신 사진의 경우, 실제 본인 식별에 다소 어려움이 있을 수 있어 사용이 불가합니다. 원활한 서류 처리를 위해, 과도한 화장은 피하시고 본인의 실제 모습과 일치하는 증명사진으로 다시 제출해 주시면 감사하겠습니다.", "t": {"en": "The photo you submitted cannot be used as it may be somewhat difficult to identify you in person. For efficient processing, please resubmit an ID photo that avoids excessive makeup and closely matches your actual appearance.", "zh": "您提交的照片可能难以辨认本人身份，因此无法使用。为了顺利办理手续，请避免过重的妆容，重新提交一张与您本人实际容貌相符的证件照，谢谢您的配合。", "ja": "ご提出いただいた写真につきましては、ご本人様の確認（識別）が困難となる可能性があり、使用することができません。円滑な書類手続のため、過度なメイクは控え、ご本人の実際の容姿に合った証明写真を再提出していただきますようお願いいたします。", "vi": "Hình ảnh bạn đã nộp không thể sử dụng do có thể gặp khó khăn trong việc xác nhận danh tính thực tế. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng trang điểm nhẹ nhàng 및 nộp lại ảnh thẻ phản ánh đúng diện mạo thực tế của bạn.", "ne": "तपाईंले बुझाउनुभएको फोटोबाट वास्तविक पहिचान गर्न केही गाह्रो हुन सक्ने भएकाले यो प्रयोग गर्न मिल्दैन। सहज कागजात प्रक्रियाका लागि, कृपया अत्यधिक makeup नगरी आफ्नो वास्तविक रूपसँग मिल्दो प्रमाणिकरण तस्बिर पुनः बुझाउनुहोला।", "uz": "Topshirgan rasmingiz orqali shaxsingizni aniqlash biroz qiyin bo'lishi mumkinligi sababli undan foydalanib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, ortiqcha pardozsiz (makiyajsiz) va haqiqiy qiyofangizga mos keladigan sertifikat fotosuratini qayta topshiring.", "mn": "Таны илгээсэн зургийг таныг танихад хэцүү байж болзошгүй тул ашиглах боломжгүй. Баримт бичгийг жигд боловсруулахын тулд хэт их нүүр будалт хийхээс зайлсхийж, бодит төрхийг тань зөв тусгасан паспортын хэв маягийн зургийг дахин илгээвэл бид талархах болно."}}, {"condition": "[컬러렌즈를 착용한 경우]", "kr": "출입국 심사 시 컬러렌즈를 착용한 증명사진은 반려될 수 있습니다. 외국인등록증 발급을 위해 컬러렌즈를 착용하지 않은 사진으로 재제출을 요청드립니다.", "t": {"en": "Photos wearing colored contact lenses cannot be accepted as they interfere with personal identification. For smooth processing, please resubmit an ID photo without colored contacts.", "zh": "为了准确辨认本人身份，无法使用佩戴彩色隐形眼镜的照片。为了顺利办理手续，请重新提交一张未佩戴彩色隐形眼镜的证件照，谢谢您的配合。", "ja": "ご本人様確認のため、カラーコンタクトレンズ를着用した写真はご使用いただけません。円滑な手続きのため、レンズ를着用していない状態の証明写真を再提出していただきますようお願いいたします。", "vi": "Để đảm bảo việc xác nhận danh tính, không thể sử dụng ảnh chụp có đeo kính áp tròng màu. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại ảnh thẻ không đeo kính áp tròng màu.", "ne": "पहिचान प्रमाणीकरणका लागि कलर लेन्स (Colored Lenses) लगाइएको फोटो प्रयोग गर्न मिल्दैन। सहज कागजात प्रक्रियाका लागि, कृपया लेन्स नलगाई खिचिएको प्रमाणिकरण तस्बिर पुनः बुझाउनुहोला।", "uz": "Shaxsingizni aniqlash uchun rangli linza taqilgan rasmlardan foydalanib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, rangli linzasiz tushilgan sertifikat fotosuratini qayta topshiring.", "mn": "Цагаачлалын шалгалтын үеэр өнгөт контакт линз зүүсэн паспортын зургийг хүлээн авахаас татгалзаж болно. Гадаадын иргэний бүртгэлийн карт олгохын тулд өнгөт контакт линзгүй зургийг дахин илгээхийг бид хүсэж байна."}}, {"condition": "[한쪽으로 쏠려있는 경우]", "kr": "제출해 주신 사진의 경우, 얼굴이 중앙에 위치하지 않아 사용이 불가합니다. 원활한 서류 처리를 위해, 얼굴이 정중앙에 위치하고 정면을 바라보는 증명사진으로 다시 제출해 주시면 감사하겠습니다.", "t": {"en": "The photo you submitted cannot be used as your face is not centered. For smooth processing, please resubmit an ID photo where your face is centered and you are looking directly at the camera.", "zh": "您提交的照片由于脸部未居中，无法使用。为了顺利办理手续，请重新提交一张脸部位于正中央并正视前方的证件照，谢谢您的配合。", "ja": "ご提出いただいた写真は、お顔が中央に配置されていないため、ご使用いただけません。円滑な手続きのため、お顔が正中央に位置し、正面를向いている証明写真を再提出していただきますようお願いいたします。", "vi": "Ảnh bạn đã nộp không thể sử dụng do khuôn mặt không nằm ở vị trí trung tâm. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại ảnh thẻ có khuôn mặt nằm chính giữa 및 nhìn thẳng về phía trước.", "ne": "तपाईंले बुझाउनुभएको फोटोमा अनुहार बीचमा नभएकाले यो प्रयोग गर्न मिल्दैन। सहज कागजात प्रक्रियाका लागि, कृपया अनुहार ठ्याक्कै बीचमा भएको र सिधा अगाडि हेरिरहेको प्रमाणिकरण तस्बिर पुनः बुझाउनुहोला।", "uz": "Topshirgan rasmingizda yuzingiz markazda joylashmaganligi sababli undan foydalanib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, yuzingiz aynan markazda joylashgan va to'g'riga qarab tushilgan sertifikat fotosuratini qayta topshirishingizni so'raymiz.", "mn": "Таны царай төвд байрлаагүй тул таны илгээсэн зургийг ашиглах боломжгүй. Баримт бичгийг жигд боловсруулахын тулд та паспортын хэв маягийн зургийг төвд нь байрлуулж, урагшаа шулуун харсан зургийг дахин илгээвэл бид талархах болно."}}, {"condition": "[양쪽눈썹이 머리카락으로 인해 안보일 경우]", "kr": "본인 식별을 위해 양쪽 눈썹이 명확히 보여야 합니다. 현재 제출해 주신 사진은 앞머리에 눈썹이 가려져 있어 사용이 어려우니, 앞머리를 정리하여 양쪽 눈썹이 잘 보이는 증명사진으로 다시 제출해 주시면 감사하겠습니다.", "t": {"en": "For personal identification, both eyebrows must be clearly visible. Since your eyebrows are covered by your bangs in the submitted photo, please resubmit an ID photo with your bangs styled to clearly show both eyebrows.", "zh": "为了准确确认您的身份，必须清晰露出双眉。由于您提交的照片前发遮挡了眉毛而无法使用，请将刘海梳至两侧，重新提交一张双眉清晰可见的证件照，谢谢您的配合。", "ja": "ご本人様確認のため、両方の眉毛がはっきりと見えている必要があります。ご提出いただいた写真は前髪で眉毛が隠れているためご使用いただけません。前髪を横に分け、両眉がしっかり見える証明写真を再提出していただきますようお願いいたします。", "vi": "Để đảm bảo việc xác nhận danh tính, cả hai lông mày phải được nhìn thấy rõ ràng. Ảnh bạn đã nộp không thể sử dụng do tóc mái che mất lông mày, vui lòng vén tóc mái sang hai bên 및 nộp lại ảnh thẻ để lộ rõ cả hai lông mày.", "ne": "पहिचान प्रमाणीकरणका लागि दुवै भौं स्पष्ट रूपमा देखिनुपर्छ। हाल बुझाउनुभएको फोटोमा अगाडिको कपालले भौं छेकिएकाले प्रयोग गर्न मिल्दैन, त्यसैले कृपया अगाडिको कपाल पन्छ्याएर दुवै भौं प्रष्ट देखिने प्रमाणिकरण तस्बिर पुनः बुझाउनुहोला।", "uz": "Shaxsingizni aniqlash uchun ikkala qoshingiz ham aniq ko'rinishi shart. Topshirgan rasmingizda soch sochig'i (chyolka) qoshlaringizni to'sib turgani sababli undan foydalanib bo'lmaydi. Iltimos, sochingizni ikki tomonga o'tkazib, ikkala qoshingiz aniq ko'rinadigan sertifikat fotosuratini qayta topshiring.", "mn": "Таних зорилгоор хоёр хөмсөг хоёулаа тод харагдах ёстой. Таны илгээсэн зургийг ашиглах боломжгүй, учир нь таны хөмсөг чёлкоор халхлагдсан байна. Хэрэв та чёлкоо цэгцэлж, хоёр хөмсөг нь тод харагдах паспортын маягийн зургийг дахин илгээвэл бид талархах болно."}}, {"condition": "[인물 주위가 불명확 할 경우]", "kr": "사진의 인물 주변이 뿌옇게 처리되어 있어 사용이 불가합니다. 원활한 서류 처리를 위해 흐림이나 보정 효과가 없는 고화질 증명사진으로 다시 제출해 주시면 감사하겠습니다.", "t": {"en": "The photo you submitted cannot be used because the area around the subject appears blurry. For smooth processing, please resubmit a high-resolution ID photo without any blur or edit effects.", "zh": "由于照片中人物周围处理得比较模糊，无法使用。为了顺利办理手续，请重新提交一张没有模糊或修图效果的高清证件照，谢谢。", "ja": "写真の人物の周囲がぼかされているため、使用できません。円滑な書類手続のため、ぼかしや補正効果のない高画質な証明写真を再提出していただきますようお願いいたします。", "vi": "Do phần xung quanh người trong ảnh bị làm mờ nên không thể sử dụng được. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại ảnh thẻ độ nét cao, không có hiệu ứng làm mờ 또는 chỉnh sửa. Xin cảm ơn.", "ne": "फोटोमा व्यक्तिको वरपरको भाग धमिलो भएकोले प्रयोग गर्न मिल्दैन। सहज प्रक्रियाको लागि, कृपया धमिलो वा अन्य कुनै इडिटिङ नगरेको स्पष्ट हाई-क्वालिटीको पासपोर्ट साइजको फोटो पुनः पेश गरिदिनुहोला। धन्यवाद।", "uz": "Rasmda inson atrofidagi qism xiralashtirilgani sababli uni ishlatib bo'lmaydi. Hujjatlarni tezroq ko'rib chiqish uchun, iltimos, xiralashtirish yoki tahrirlash effektlari bo'lmagan yuqori sifatli pasport rasmini qayta topshiring. Rahmat.", "mn": "Тухайн хүний эргэн тойрон дахь хэсэг бүдгэрсэн тул зургийг ашиглах боломжгүй. Баримт бичгийн боловсруулалтыг жигд явуулахын тулд та ямар ч бүдгэрүүлэлт эсвэл залруулгын эффектгүйгээр өндөр чанартай үнэмлэхний зургийг дахин илгээвэл бид талархах болно."}}], "reference": null}, {"id": "certificates", "name": "각종 증명서", "desc": "재학증명서·등록금 납입 증명서·초과학기 사유서 등", "groups": [{"group": "재학증명서", "items": [{"condition": "[개강 전 발급 받은 서류]", "kr": "개강 전 발급받은 서류가 아닌, 개강일 이후에 발급받은 재학증명서를 제출해 주시기 바랍니다.", "t": {"en": "Please submit an enrollment certificate issued after the semester start date, not one issued before the start of the semester.", "zh": "请提交开学日之后开具的在读证明，而非开学前开具的文件。", "ja": "新学期開始前ではなく、開講日以降に発行された在学証明書をご提出ください。", "vi": "Vui lòng nộp Giấy chứng nhận đang theo học được cấp sau ngày khai giảng, không phải chứng nhận cấp trước khi bắt đầu kỳ học.", "ne": "नयाँ सत्र सुरु हुनुअघि जारी गरिएको कागजात होइन, सत्र सुरु भएको मितिपछि जारी गरिएको अध्ययनरत प्रमाणपत्र पेश गर्नुहुन अनुरोध गरिन्छ।", "uz": "Iltimos, darslar boshlanishidan oldin berilgan emas, balki darslar boshlangan sanadan keyin berilgan o'qish joyidan ma'lumotnomani (재학증명서) taqdim eting.", "mn": "Семестр эхлэхээс өмнө олгосон баримт бичгийн оронд семестр эхэлсний дараа олгосон элсэлтийн гэрчилгээг ирүүлнэ үү."}}, {"condition": "[선명도가 부족한 경우]", "kr": "사진상 선명도 부족 등으로 본인 확인이 어려워 재제출을 요청드립니다. 식별이 명확한 원본 사진으로 제출해 주시기 바랍니다.", "t": {"en": "It is difficult to verify your identity due to low photo clarity. Please resubmit a clear, original photo for identification purposes.", "zh": "由于照片清晰度不足等原因，难以确认是否为本人，请重新提交。请提交能够清晰辨认本人的原始照片文件。", "ja": "写真の鮮明度が低く本人確認が困難なため、再提出をお願いいたします。本人確認が明確にできる鮮明なオリジナルの写真データをご提出ください。", "vi": "Do chất lượng ảnh/độ nét không đủ nên khó xác nhận chính chủ, vui lòng nộp lại ảnh. Vui lòng nộp file ảnh gốc rõ nét để có thể xác minh danh tính.", "ne": "फोटोको स्पष्टता नपुगेकोले व्यक्तिको पहिचान गर्न गाह्रो भएको छ, त्यसैले फोटो पुनः पठाउन अनुरोध गरिन्छ। कृपया पहिचान प्रष्ट हुने गरी सफा (मूल) फोटो पठाउनुहोला।", "uz": "Rasmning tinqligi yetarli bo'lmagani sababli shaxsingizni tasdiqlashning imkoni bo'lmadi. Iltimos, shaxsingiz aniq ko'rinadigan original rasmni qayta topshiring.", "mn": "Зураг дээр тодорхой бус байдлаас шалтгаалан таны хэн болохыг баталгаажуулахад хэцүү байгаа тул бид дахин ирүүлэхийг хүсэж байна. Тодорхой танигдахуйц эх зургийг ирүүлнэ үү."}}, {"condition": "[입학일자가 명시되어 있지 않을 경우]", "kr": "제출해 주시는 재학증명서에는 입학일자가 반드시 명시되어 있어야 합니다. 서류를 확인하신 후, 입학일자가 기재된 재학증명서로 다시 제출해 주시면 감사하겠습니다.", "t": {"en": "The Certificate of Enrollment you submit must include your admission date. Please check your document and resubmit a certificate that clearly states your date of admission. Thank you.", "zh": "您提交的在读证明书上必须注明入学日期。请核对文件后，重新提交包含入学日期的在读证明书，谢谢。", "ja": "ご提出いただく在学証明書には、入学年月日が必ず明記されている必要があります。書類をご確認の上、入学年月日が記載された在学証明書を再提出していただきますようお願いいたします。", "vi": "Giấy chứng nhận đang học (Certificate of Enrollment) bạn nộp bắt buộc phải có ghi rõ ngày nhập học. Vui lòng kiểm tra lại giấy tờ 및 nộp lại bản có ghi ngày nhập học. Xin cảm ơn.", "ne": "तपाईंले पेश गर्ने अध्ययनरत प्रमाण-पत्र (Certificate of Enrollment) मा भर्ना भएको मिति (Admission Date) अनिवार्य रूपमा उल्लेख भएको हुनुपर्छ। कृपया कागजपत्र जाँच गरी भर्ना मिति उल्लेख भएको प्रमाण-पत्र पुनः पेश गरिदिनुहोला। धन्यवाद।", "uz": "Siz topshiradigan o'qish joyidan ma'lumotnomada (Certificate of Enrollment) albatta o'qishga kirgan sana ko'rsatilgan bo'lishi kerak. Hujjatni tekshirib, kirish sanasi ko'rsatilgan ma'lumotnomani qayta topshirishingizni so'raymiz. Rahmat.", "mn": "Таны ирүүлсэн бүртгэлийн гэрчилгээнд элсэлтийн огноог тодорхой заасан байх ёстой. Баримт бичгийг хянаж үзсэний дараа та элсэлтийн огноог оруулсан бүртгэлийн гэрчилгээг дахин ирүүлбэл бид талархах болно."}}, {"condition": "[연대전용-재학증명서 제출사항]", "kr": "연세대학교의 CERTIFICATE OF ENROLLMENT는 재적증명서입니다. 재학증명서인 CERTIFICATE OF ATTENDANCE를 제출해주세요. (영문으로 제출해주세요.)", "t": {"en": "Yonsei University's 'CERTIFICATE OF ENROLLMENT' is considered a Certificate of Student Record (재적증명서). Please submit the 'CERTIFICATE OF ATTENDANCE', which is the actual Certificate of Enrollment (재학증명서). (Please submit it in English.)", "zh": "延世大学的 'CERTIFICATE OF ENROLLMENT' 是在籍证明书。请提交作为在读证明书的 'CERTIFICATE OF ATTENDANCE'。（请提交英文版本。）", "ja": "延世大学の 'CERTIFICATE OF ENROLLMENT' は在籍証明書にあたります。在学証明書である 'CERTIFICATE OF ATTENDANCE' をご提出ください。（英文でのご提出をお願いいたします。）", "vi": "'CERTIFICATE OF ENROLLMENT' của Đại học Yonsei là Giấy chứng nhận hồ sơ sinh viên (재적증명서). Vui lòng nộp 'CERTIFICATE OF ATTENDANCE' là Giấy chứng nhận đang học (재학증명서). (Vui lòng nộp bằng tiếng Anh.)", "ne": "योनसे विश्वविद्यालय (Yonsei University) को 'CERTIFICATE OF ENROLLMENT' भनेको दर्ता प्रमाण-पत्र (재적증명서) हो। कृपया अध्ययनरत प्रमाण-पत्र (재학증명서) को रूपमा 'CERTIFICATE OF ATTENDANCE' पेश गरिदिनुहोला। (कृपया अंग्रेजी भाषामा पेश गर्नुहोला।)", "uz": "Yonsei universitetining 'CERTIFICATE OF ENROLLMENT' hujjati talabalar safida mavjudlik haqida ma'lumotnoma (재적증명서) hisoblanadi. Iltimos, haqiqiy o'qish joyidan ma'lumotnoma (재학증명서) bo'lgan 'CERTIFICATE OF ATTENDANCE' hujjatini topshiring. (Iltimos, ingliz tilidagi shaklini topshiring.)", "mn": "Ёнсей Их Сургуулийн ЭЛСЭЛТИЙН ГЭРЧИЛГЭЭ нь элсэлтийн гэрчилгээ юм. Оюутны элсэлтийн гэрчилгээ болох СУРГАЛТЫН ГЭРЧИЛГЭЭГ ирүүлнэ үү. (Англи хэл дээр ирүүлнэ үү.)"}}, {"condition": "[스캔상태가 불선명할 경우]", "kr": "제출해 주신 서류의 종류는 올바르나, 스캔 상태가 불선명하여 검토가 어렵습니다. 해당 서류를 명확하게 다시 스캔하여 제출해 주시기 바랍니다.", "t": {"en": "The document type you submitted is correct, but the image is unreadable due to low scan quality. Please resubmit a clear, high-quality scan of the document.", "zh": "您提交的文件种类正确，但由于扫描件不够清晰，难以进行审核。请重新清晰扫描该文件并予以提交。", "ja": "ご提出いただいた書類の種類は正しいですが、スキャン状態が鮮明でないため確認が困難です。該当の書類を鮮明にスキャンし直して再提出をお願いいたします。", "vi": "Loại giấy tờ bạn nộp đã đúng, tuy nhiên bản quét (scan) không rõ ràng nên rất khó kiểm tra. Vui lòng quét (scan) lại rõ ràng giấy tờ đó 및 nộp lại.", "ne": "तपाईंले पेश गर्नुभएको कागजातको प्रकार सही छ, तर स्क्यान स्पष्ट नभएकोले जाँच गर्न गाह्रो भएको छ। कृपया उक्त कागजात स्पष्टसँग पुनः स्क्यान गरेर पेश गरिदिनुहोला।", "uz": "Topshirgan hujjatingiz turi to'g'ri, ammo skaner sifati yomonligi sababli uni ko'rib chiqishning imkoni bo'lmayapti. Iltimos, ushbu hujjatni aniq va tinq skaner qilib qayta topshiring.", "mn": "Таны илгээсэн баримт бичгийн төрөл зөв боловч сканнердах чанар тодорхойгүй байгаа тул хянахад хэцүү байна. Баримт бичгийг дахин сканнердаж, тодорхой дахин илгээгээрэй."}}]}, {"group": "등록금 납입 증명서", "items": [{"condition": "[교육비 납입 내용 요청]", "kr": "교육비 납입 내역이 명시된 납입 증명서를 제출해 주세요.", "t": {"en": "Please submit the payment certificate showing the tuition payment details.", "zh": "请提交载有学费缴纳明细的明细证明。", "ja": "教育費の納付明細が明記された納付証明書をご提出ください。", "vi": "Vui lòng nộp chứng nhận nộp tiền có ghi rõ chi tiết thanh toán học phí.", "ne": "कृपया शैक्षिक शुल्क भुक्तानी विवरण स्पष्ट उल्लेख भएको भुक्तानी प्रमाणपत्र पेश गर्नुहोस्।", "uz": "Iltimos, o'quv to'lovlari tafsilotlari ko'rsatilgan to'lov tasdiqnomasini taqdim eting.", "mn": "Сургалтын төлбөрийн түүхийг тодорхойлсон төлбөрийн гэрчилгээг ирүүлнэ үү."}, "note": "• 경기대학교 수원캠퍼스 학위(D-2)는 추가학기생에 한해 등록금 납입증명서 발급 X -> 다른 서류 제출해도 승인\n• GKS 장학증서 내에 기재된 기간까지는 수수료 면제 가능 -> 해당 서류 제출 시 서류 내에 기재된 기간 내라면 장학증명서 따로 열어서 받기"}, {"condition": "[영수증 제출]", "kr": "영수증이 아닌 '등록금 납입 증명서'를 제출해 주세요.", "t": {"en": "Please submit the \"Tuition Payment Certificate\" instead of the receipt.", "zh": "请提交“学费缴纳证明书”，而非收据。", "ja": "領収書ではなく「授業料納付証明書」をご提出ください。", "vi": "Vui lòng nộp \"Giấy chứng nhận nộp học phí\" chứ không phải biên lai.", "ne": "रसिदको सट्टा 'ट्यूशन शुल्क भुक्तानी प्रमाणपत्र' पेश गर्नुहोस्।", "uz": "Kvitansiya emas, balki \"O'qish to'lovi to'langanligi to'g'risida ma'lumotnoma\"ni taqdim eting.", "mn": "Баримтын оронд 'Сургалтын төлбөрийн гэрчилгээ'-г ирүүлнэ үү."}}, {"condition": "[다른 학기 등록금 납입 증명서를 제출한 경우]", "kr": "2026-2학기 등록금 납입 증명서를 제출해 주세요.", "t": {"en": "Please submit the tuition payment certificate for the 2026-2 semester.", "zh": "请提交2026学年第二学期的学费缴纳证明书。", "ja": "2026年度第2学期（秋学期）の授業料納付証明書をご提出ください。", "vi": "Vui lòng nộp Giấy chứng nhận nộp học phí học kỳ 2 năm 2026.", "ne": "कृपया 2026-2 सेमेस्टरको ट्युशन शुल्क भुक्तानी प्रमाण-पत्र पेश गर्नुहोस्।", "uz": "Iltimos, 2026-yil 2-semestr uchun o'quv to'lovi to'langanligi to'g'risidagi ma'lumotnomani taqdim eting.", "mn": "2026-2 оны семестрийн сургалтын төлбөрийг төлсөн баримтаа ирүүлнэ үү."}}]}, {"group": "초과학기 사유서", "items": [{"condition": "[자필 사유서 작성 안내]", "kr": "자세하고 진정성 있는 자필사유서를 작성해주세요. 양식은 없으며 학생 이름, 자필 서명, 작성 일자 필수입니다.", "t": {"en": "Please write a detailed and sincere handwritten statement of reasons. There is no set format, but the student's name, handwritten signature, and date of writing are mandatory.", "zh": "请详细且诚恳地填写亲笔事由书。无固定格式，但必须包含学生姓名、手写签名及填写日期。", "ja": "詳細かつ誠意のある手書きの理由書を作成してください。フォーマット（様式）はございませんが、学生のお名前、直筆サイン、作成日付は必須となります。", "vi": "Vui lòng viết bản giải trình bằng tay chi tiết và thành thật. Không có biểu mẫu quy định, nhưng bắt buộc phải có tên học sinh, chữ ký tay 및 ngày viết.", "ne": "कृपया विस्तृत र इमानदार हस्तलिखित कारण पत्र लेख्नुहोस्। यसको कुनै निश्चित ढाँचा छैन, तर विद्यार्थीको नाम, हस्तलिखित हस्ताक्षर र लेखिएको मिति अनिवार्य छ।", "uz": "Iltimos, batafsil va samimiy qo'lyozma tushuntirish xati yozing. Maxsus shakl yo'q, lekin talabaning ismi, shaxsiy imzosi va yozilgan sana majburiydir.", "mn": "Шалтгааныг дэлгэрэнгүй, чин сэтгэлээсээ гараар бичнэ үү. Тодорхой формат байхгүй боловч оюутны нэр, гараар бичсэн гарын үсэг, бичсэн огноог заавал оруулах шаардлагатай."}, "note": "자필 조건 엄수 (양식 없음 / 이름, 자필 서명, 작성일자 필수)"}, {"condition": "[분량 미충족]", "kr": "A4 용지 절반 이상 분량을 자필로 작성해 주세요.", "t": {"en": "Please write at least half an A4 page by hand.", "zh": "请用手写方式填写A4纸一半 이상의 篇幅。", "ja": "A4用紙の半分以上の分量を手書きで作成してください。", "vi": "Vui lòng viết tay ít nhất một nửa trang giấy A4.", "ne": "कृपया A4 कागजातको आधाभन्दा बढी भाग हातले लेख्नुहोस्।", "uz": "Iltimos, kamida A4 qog'ozining yarmini o'z qo'lingiz bilan yozing.", "mn": "А4 хуудасны талаас илүү хувийг гараар бичнэ үү."}}]}], "reference": [{"title": "참고 기준 · 잔고 증명서 기준금액 산출식 및 산출 참고표", "formula": {"label": "산출 공식", "value": "1인 가구 주거급여 금액 (2026년 기준: 1,230,834원) × 희망 연장 개월 수 × 1/2"}, "conditions": {"label": "산정 조건", "items": ["D-2 성적 저조: 1년 (12개월)", "D-2 초과학기: 지도교수 확인서 상 적힌 기간", "D-4 출석률 저조: 등록금 납부된 학기 기준"]}, "table": {"headers": ["연장 기간 구분", "기간 (개월)", "1인 주거급여 기준액", "인정 비율", "기준 산출 금액 (원)", "적용 조건 및 비고"], "rows": [["3개월 연장", "3", "1,230,834원", "0.5", "1,846,251원", "단기 연장 필요 시 (특수 케이스)"], ["6개월 연장 (1학기)", "6", "1,230,834원", "0.5", "3,692,502원", "D-2 초과학기 등 1학기 연장 기준"], ["12개월 연장 (1년)", "12", "1,230,834원", "0.5", "7,385,004원", "D-2 성적 저조 등 1년 연장 기준"]]}}]}, {"id": "residence", "name": "거주지 서류", "desc": "주소·임대차계약서·거주제공확인서 등 거주지 관련 서류", "groups": [{"group": "하이코리아상 주소", "items": [{"condition": "[거래주소-기재주소 다른경우]", "kr": "현재 하이코리아에 등록되어있는 거주지와 거주지 서류 속 주소가 다릅니다. 주민센터나 하이코리아에서 거주지 변경 신고 후에 외국인등록증 뒷면 제출해 주세요. 혹은 허가를 받은 후에 허가확인서를 제출해주세요.", "t": {"en": "The address in HiKorea does not match the address on your proof of residence document. Please report your change of residence at the community center or via HiKorea, then submit a copy of the back of your Registration Card. Alternatively, once approved, please submit the Confirmation of Permitted Application.", "zh": "目前在HiKorea登记的居住地与居住地文件中的地址不一致。请在居民中心或HiKorea申报居住地变更后，提交外国人登录证的背面。或者在获得许可后，提交许可确认书。", "ja": "現在HiKoreaに登録されている居住地と、居住地書類の住所が異なります。住民センターやHiKoreaで居住地変更申告を行った後、外国人登録証の裏面をご提出ください。または、許可を受けた後に許可確認書をご提出ください。", "vi": "Địa chỉ hiện tại đăng ký trên HiKorea khác với địa chỉ trong tài liệu nơi cư trú. Vui lòng khai báo thay đổi nơi cư trú tại trung tâm hành chính công (주민센터) hoặc qua HiKorea, sau đó nộp mặt sau của Thẻ đăng ký nước ngoài. Hoặc sau khi được phê duyệt, vui lòng nộp Giấy xác nhận cho phép.", "ne": "हाल HiKorea मा दर्ता भएको ठेगाना र बसोबासको कागजातमा भएको ठेगाना फरक छ। कृपया सामुदायिक केन्द्र (주민센터) वा HiKorea मार्फत ठेगाना परिवर्तनको रिपोर्ट गर्नुहोस्, र विदेशी दर्ता कार्डको पछाडिको भाग पेश गर्नुहोस्। अथवा, स्वीकृति प्राप्त गरेपछि स्वीकृति पुष्टि पत्र पेश गर्नुहोस्।", "uz": "Hozirda HiKoreada ro'yxatdan o'tgan yashash joyingiz va yashash joyi to'g'risidagi hujjatdagi manzilingiz bir-biriga mos kelmayapti. Iltimos, mahalla idorasida (주민센터) yoki HiKorea orqali yashash joyini o'zgartirish haqida xabar bering, so'ngra chet ellik guvohnomasining orqa tomonini taqdim eting. Yoki ruxsat olganingizdan keyin ruxsatnomani taqdim eting.", "mn": "HiKorea дээр одоогоор бүртгэлтэй хаяг нь таны оршин суух бичиг баримт дээрх хаягаас өөр байна. Оршин суух хаягаа сольсон тухайгаа Олон нийтийн үйлчилгээний төв эсвэл HiKorea-д мэдэгдэж, гадаадын иргэний бүртгэлийн картынхаа ар талыг ирүүлнэ үү. Эсвэл зөвшөөрөл авсны дараа зөвшөөрлийн баталгаажуулалтыг ирүүлнэ үү."}}]}, {"group": "기숙사 거주 확인서", "items": [{"condition": "[기숙사 거주 확인서 - 이화여자대학교]", "kr": "이화여자대학교 기숙사 서류에는 가운데에 학교 워터마크(음영)가 들어가 있는 것으로 알고 있습니다. 기숙사관장의 직인이 좀 더 명확하게 보이도록 다시 업로드해 주시기 바랍니다. 학교로부터 정식으로 서류를 발급받아 제출해 주시기 바랍니다.", "t": {"en": "We understand that Ewha Womans University's dormitory document includes a school watermark in the center. Please re-upload the document so that the dormitory director's official stamp/seal is more clearly visible. Please obtain the document officially from the school and submit it.", "zh": "据了解，梨花女子大学宿舍文件中中间带有学校的水印（阴影）。为了能更清晰地看到宿舍舍长的印章，请重新上传。请提交从学校正式开具的文件。", "ja": "梨花女子大学の寮の書類には、中央に学校のウォーターマーク（影）が入っていると承知しております。寮長の直印がより鮮明に見えるよう、再アップロードをお願いいたします。学校から正式に書類の発行を受けてご提出ください。", "vi": "Chúng tôi được biết rằng tài liệu ký túc xá của Trường Đại học Nữ sinh Ewha có hình mờ (chữ bóng) của trường ở giữa. Vui lòng tải lại tài liệu sao cho con dấu chính thức của ban quản lý ký túc xá hiển thị rõ ràng hơn. Hãy nhận tài liệu chính thức từ nhà trường 및 nộp.", "ne": "हामीलाई थाहा भएअनुसार इवा वुमन्स युनिभर्सिटी (Ewha Womans University) को होस्टेलको कागजातको बीचमा स्कूलको वाटरमार्क (छायाँ) हुन्छ। कृपया होस्टेल सञ्चालकको आधिकारिक छाप स्पष्ट देखिने गरी फेरि अपलोड गर्नुहोस्। स्कूलबाट आधिकारिक रूपमा कागजात जारी गराई पेश गर्नुहोस्।", "uz": "Ewha Womans universitetining yotoqxona hujjatining o'rtasida universitet suv belgisi (shrift soyasi) borligini bilamiz. Yotoqxona rahbarining rasmiy muhri aniqroq ko'rinishi uchun hujjatni qayta yuklashingizni so'raymiz. Iltimos, universitetdan rasmiy ravishda hujjat olib taqdim eting.", "mn": "Эва эмэгтэйчүүдийн их сургуулийн дотуур байрны баримт бичгийн төв хэсэгт сургуулийн усны тэмдэг (сүүдэр) байгааг би ойлгож байна. Дотуур байрны захирлын албан ёсны тамга илүү тод харагдахаар файлуудыг дахин байршуулна уу. Сургуулиас албан ёсоор олгосон баримт бичгийг авч ирүүлнэ үү."}}]}, {"group": "임대차계약서", "items": [{"condition": "[임대차계약서 만료 - 계약기간 30일 미만]", "kr": "임대차 계약기간이 30일미만으로 남아있습니다. 기간 연장 계약서나 월세 영수증을 제출해주세요.", "t": {"en": "The lease agreement period has less than 30 days remaining. Please submit an extension agreement or a monthly rent receipt.", "zh": "租赁合同期限剩余不足30天。请提交续约合同书或月租收据。", "ja": "賃貸借契約期間が30日未満となっております。期間延長契約書または家賃の領収書をご提出ください。", "vi": "Thời hạn hợp đồng thuê nhà còn lại dưới 30 ngày. Vui lòng nộp hợp đồng gia hạn hoặc biên lai thanh toán tiền nhà hàng tháng.", "ne": "भाडा सम्झौता अवधि ३० दिनभन्दा कम बाँकी छ। कृपया अवधि थप सम्झौता पत्र वा मासिक भाडाको रसिद पेश गर्नुहोस्।", "uz": "Ijara shartnomasi muddati tugashiga 30 kundan kam vaqt qoldi. Iltimos, muddatni uzaytirish shartnomasini yoki oylik ijara haqi kvitansiyasini taqdim eting.", "mn": "Таны түрээсийн хугацаа дуусахад 30 хоногоос бага хугацаа үлдлээ. Түрээсийн гэрээний хугацаа сунгах гэрээ эсвэл сарын түрээсийн баримтаа ирүүлнэ үү."}, "note": "cf) 전부터 살고 있었고 30일 정도 남으면 승인 가능"}, {"condition": "[임대차계약서 만료 - 기간 만료됨]", "kr": "임대차 계약기간이 만료되었습니다. 기간 연장 계약서나 가장 최근 월세 영수증을 제출해주세요.", "t": {"en": "The lease agreement period has expired. Please submit an extension agreement or the most recent monthly rent receipt.", "zh": "租赁合同期限已届满。请提交续约合同书或最近期的月租收据。", "ja": "賃貸借契約期間が満了しております。期間延長契約書または直近の家賃領収書をご提出ください。", "vi": "Hợp đồng thuê nhà đã hết hạn. Vui lòng nộp hợp đồng gia hạn hoặc biên lai tiền nhà hàng tháng gần đây nhất.", "ne": "भाडा सम्झौता अवधि समाप्त भएको छ। कृपया अवधि थप सम्झौता पत्र वा सबैभन्दा पछिल्लो मासिक भाडाको रसिद पेश गर्नुहोस्।", "uz": "Ijara shartnomasi muddati tugadi. Iltimos, muddatni uzaytirish shartnomasini yoki eng oxirgi oylik ijara haqi kvitansiyasini taqdim eting.", "mn": "Түрээсийн гэрээний хугацаа дууссан. Түрээсийн сунгалтын гэрээ эсвэл хамгийн сүүлийн үеийн сарын түрээсийн баримтыг ирүүлнэ үү."}, "note": "추가 증빙자료 조건: 주민세 통지서(주소 표기) 스캔본 인정 가능.\n또는 다음 중 1개 제출:\n1. 가장 최근 달 전기/가스 고지서\n2. 가장 최근 달 월세 영수증 혹은 월세 계좌이체내역\n3. 출입국 사무소에서 발송한 체류 연장 안내 우편"}, {"condition": "[부동산계약서에 학생이름이 없는 경우]", "kr": "제출해 주신 임대차 계약서에서 학생분의 이름을 확인할 수 없습니다. 원활한 서류 처리를 위해 학생의 이름이 정확히 명시된 계약서로 다시 제출해 주시기 바랍니다.", "t": {"en": "We were unable to find the student's name on the submitted real estate lease agreement. For smooth processing, please resubmit a lease agreement that clearly states the student's name.", "zh": "您提交的租赁合同中无法确认您的姓名。为了顺利办理手续，请重新提交明确标注有您姓名的合同。", "ja": "ご提出いただいた賃貸借契約書からお名前が確認できません。円滑な書類手続のため、お名前が正確に明記された契約書を再提出していただきますようお願いいたします。", "vi": "Không thể tìm thấy tên của bạn trên hợp đồng thuê nhà đã nộp. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại hợp đồng có ghi rõ tên của bạn.", "ne": "तपाईंले पेश गर्नुभएको भाडा सम्झौता (Lease Agreement) मा तपाईंको नाम भेट्टाउन सकिएन। सहज प्रक्रियाको लागि, कृपया तपाईंको नाम स्पष्ट रूपमा उल्लेख भएको सम्झौता-पत्र पुनः पेश गरिदिनुहोला।", "uz": "Siz topshirgan ijara shartnomasida ism-sharifingizni aniqlab bo'lmadi. Hujjatlarni tezroq ko'rib chiqish uchun, iltimos, ism-sharifingiz aniq ko'rsatilgan ijara shartnomasi qayta topshirishingizni so'raymiz.", "mn": "Таны ирүүлсэн түрээсийн гэрээнд байгаа оюутны нэрийг бид баталгаажуулж чадсангүй. Баримт бичгийг жигд боловсруулахын тулд оюутны нэрийг тодорхой заасан гэрээг дахин илгээвэл бид талархах болно."}}]}, {"group": "영수증", "items": [{"condition": "[영수증에 일정 정보가 없는 경우]", "kr": "제출한 영수증에 학생이름을 작성하여 제출해주세요.", "t": {"en": "Please write the student's name on the submitted receipt and submit it.", "zh": "请在提交的收据上写上学生的姓名后重新提交。", "ja": "提出された領収書に学生のお名前를記入の上、ご提出ください。", "vi": "Vui lòng viết tên học sinh lên hóa đơn đã nộp 및 gửi lại.", "ne": "कृपया पेश गरिएको रसिदमा विद्यार्थीको नाम लेखेर पेश गर्नुहोस्।", "uz": "Iltimos, topshirilgan kvitansiyaga talabaning ismini yozib, qayta topshiring.", "mn": "Илгээсэн баримтан дээр оюутны нэрийг бичээд ирүүлнэ үү."}}]}, {"group": "33M2, 엔코스테이", "items": [{"condition": "[신분증, 임대차계약서(거주제공자)를 제공하지 않는 33M2 호스트 관련]", "kr": "모든 서류는 외국인에게 숙소를 제공하는 사람이라면 필수적으로 제출해야 하는 사항입니다. 오직 법무부 출입국·외국인정책본부에만 제출되며 기타 사항에 의하여 활용되지 않습니다. 아래 서류를 OOO 씨가 제공하지 않는다면 해당 거주지는 '외국인이 거주할 수 없은 거주지'에 해당되오니 새로운 숙소를 찾으시는 것을 추천합니다.", "t": {"en": "All documents are mandatory submissions for anyone providing accommodation to a foreigner. They are submitted strictly to the Ministry of Justice's Korea Immigration Service and will not be used for any other purposes. If Mr./Ms. OOO does not provide the documents below, the residence will be classified as 'an accommodation where foreigners cannot reside,' so we recommend finding a new place to stay.", "zh": "对于向外国人提供住宿的所有人来说，所有文件都是必须提交的事项。文件将仅提交给法务部出入境·外国人政策本部，绝不用于其他用途。如果 OOO 先生/女士不提供以下文件，该居住地将被归类为“外国人无法居住的住所”，因此建议您寻找新的住宿。", "ja": "すべての書類は、外国人に宿泊施設を提供する方であれば必須でご提出いただく事項です。法務省出入国・外国人政策本部のみに提出され、その他の目的で使用されることはございません。下記の書類を OOO 様にご提供いただけない場合、該当の居住地は「外国人が居住できない居住地」に該当いたしますので、新しい宿泊施設をお探しになることをお勧めいたします。", "vi": "Tất cả các tài liệu này là bắt buộc đối với bất kỳ ai cung cấp chỗ ở cho người nước ngoài. Chúng chỉ được nộp cho Cục Quản lý Xuất nhập cảnh 및 Chính sách Người nước ngoài thuộc Bộ Tư pháp 및 không sử dụng vào mục đích khác. Nếu ông/bà OOO không cung cấp các tài liệu dưới đây, nơi ở đó sẽ bị coi là 'nơi người nước ngoài không thể cư trú', vì vậy chúng tôi khuyên bạn nên tìm chỗ ở mới.", "ne": "विदेशीलाई बस्ने ठाउँ उपलब्ध गराउने जोसुकैले पनि यी सबै कागजातहरू अनिवार्य रूपमा पेश गर्नुपर्छ। यी कागजातहरू न्याय मन्त्रालयको अध्यागमन विभागमा मात्र पेश गरिन्छ र अन्य प्रयोजनका लागि प्रयोग गरिँदैन। यदि श्री/श्रीमती OOO ले तलका कागजातहरू उपलब्ध गराउनुभएन भने, उक्त ठेगाना 'विदेशीहरू बस्न नमिल्ने ठाउँ' अन्तर्गत पर्ने भएकाले नयाँ बस्ने ठाउँ खोज्न सिफारिस गरिन्छ।", "uz": "Chet ellik kishiga turar joy berayotgan har bir kishi ushbu hujjatlarni topshirishi majburiydir. Ushbu hujjatlar faqatgina Adliya vazirligining Immigratsiya xizmatiga taqdim etiladi va boshqa maqsadlarda foydalanilmaydi. Agar OOO xonim/janoblari quyidagi hujjatlarni taqdim etmasa, ushbu turar joy \"chet elliklar yashay olmaydigan joy\" deb hisoblanadi, shuning uchun yangi turar joy topishingizni tavsiya qilamiz.", "mn": "Гадаадын иргэнд байр өгч буй хүн бүр бүх баримт бичгийг заавал бөглөх ёстой. Эдгээрийг зөвхөн Хууль зүйн яамны Цагаачлал, гадаад бодлогын товчоонд ирүүлэх бөгөөд өөр зорилгоор ашиглахгүй. Хэрэв ноён/хатагтай ХХК доор жагсаасан баримт бичгийг өгөхгүй бол тухайн оршин суугаа газрыг \"гадаадын иргэд оршин сууж чадахгүй оршин суугаа газар\" гэж ангилах тул танд шинэ байр олохыг зөвлөж байна."}, "note": "필수 보완 요청 3종 서류:\n1. 거주/숙소 제공 확인서 (하이코리아 민원서식)\n2. 거주/숙소 제공자의 임대차계약서 (집주인이면 등기부등본/매매계약서, 임차인이면 임대차계약서, 사업자면 사업자 계약서)\n3. 거주/숙소 제공자의 신분증 앞뒷면 사본 (주민번호 뒷자리 마스킹 가능, 사업자면 사업자등록증 대체)"}, {"condition": "[엔코스테이 영수증과 보완이 필요한 다른 부가적인 서류를 낸 경우]", "kr": "엔코스테이(Enkorstay)에서 발급받으신 임대차 계약서(PDF)를 전달해 주시기 바랍니다.\n공식 계약서를 제출해 주실 경우 승인 절차가 한층 더 원활하고 신속하게 진행됩니다.", "t": {"en": "Please provide the lease agreement (PDF) issued by Enkorstay. Submitting the official lease agreement will allow the approval process to proceed much more smoothly and quickly.", "zh": "请提交由 Enkorstay 开具的房屋租赁合同（PDF）。提交官方正式合同将有助于提升审批流程的顺畅度与办理速度。", "ja": "Enkorstay（エンコルステイ）から発行された賃貸借契約書（PDF）をご提出ください。正式な契約書をご提出いただくことで、承認手続きがよりスムーズかつ迅速に進みます。", "vi": "Vui lòng gửi Hợp đồng thuê nhà (file PDF) được cấp bởi Enkorstay. Việc nộp hợp đồng chính thức sẽ giúp quá trình phê duyệt diễn ra thuận lợi và nhanh chóng hơn.", "ne": "कृपया Enkorstay बाट प्राप्त गर्नुभएको घर भाडा सम्झौता पत्र (PDF) पठाउनुहोला। आधिकारिक सम्झौता पत्र बुझाउनुभएमा स्वीकृत प्रक्रिया अझ सहज र छिटो अघि बढ्नेछ।", "uz": "Iltimos, Enkorstay tomonidan berilgan ijara shartnomani (PDF) taqdim eting. Rasmiy shartnomani topshirish tasdiqlash jarayonini yanada silliq va tezroq amalga oshirishga yordam beradi.", "mn": "Enkorstay-аас гаргасан түрээсийн гэрээг (PDF) өгнө үү.\n\nАлбан ёсны гэрээг ирүүлснээр батлах үйл явц илүү жигд, хурдан явагдах болно."}}]}, {"group": "거주제공확인서", "items": [{"condition": "[거주제공확인서에 거주 숙소 제공일이 비어있는 경우]", "kr": "거주 제공 확인서에 거주,숙소 제공일이 비어있습니다. 문서 작성일과 동일한 날짜로 작성해주세요.", "t": {"en": "On the Confirmation of Residence/Accommodation, the start date of accommodation is left blank. Please fill in the same date as the date of document issuance.", "zh": "居住提供确认书中的居住/住宿提供日期留空了。请填写与文书填写日期相同的日期。", "ja": "居住提供確認書の居住・宿泊提供日が空欄になっています。文書作成日と同じ日付を記入してください。", "vi": "Ngày cung cấp nơi ở/chỗ ở trong Giấy xác nhận cung cấp nơi ở đang bị bỏ trống. Vui lòng điền cùng ngày với ngày viết giấy.", "ne": "बासस्थान प्रदान पुष्टि पत्र (거주 제공 확인서) मा आवास प्रदान गरिएको मिति खाली छ। कृपया कागजात लेखिएको मिति (작성इ) सरह नै मिति लेख्नुहोला।", "uz": "Turar joy taqdim etilganligini tasdiqlovchi hujjatda (거주 제공 확인서) turar joy berilgan sana bo'sh qolgan. Iltimos, uni hujjat tuzilgan sana bilan bir xil sana deb yozing.", "mn": "Оршин суух болон байраар хангагдсан огноог Оршин суух зөвшөөрөл олгосон тухай баталгаажуулалт дээр хоосон үлдээсэн байна. Баримт бичиг үүсгэсэн огноотой ижил огноог оруулан бөглөнө үү."}}, {"condition": "[거주제공확인서에 작성일이 비어있는 경우]", "kr": "거주 제공 확인서 작성일이 비어있습니다. 숙소 제공일보다 이후 날짜로 작성해 주세요.", "t": {"en": "The document creation date on the Confirmation of Residence Provision is left blank. Please write a date that is after the accommodation provision date.", "zh": "居住提供确认书上的开具日期为空白。请填写住宿提供日之后的日期。", "ja": "居住提供確認書の作成日が空欄になっています。宿泊提供日以降の日付でご記入ください。", "vi": "Ngày lập Giấy xác nhận cung cấp nơi cư trú đang để trống. Vui lòng ghi ngày sau ngày cung cấp chỗ ở.", "ne": "बसोबास उपलब्ध गराएको पुष्टि पत्रमा कागजात तयार गरिएको मिति खाली छ। कृपया होस्टेल उपलब्ध गराइएको मितिपछिको मिति लेख्नुहोला।", "uz": "Yashash joyi taqdim etilganligi to'g'risidagi tasdiqnomada yozilgan sana bo'sh. Iltimos, turar joy taqdim etilgan sanadan keyingi sanani yozing.", "mn": "Оршин суух зөвшөөрлийн баталгаажуулалтын огноо хоосон байна. Байр олгосон огнооноос хойших огноог оруулна уу."}}, {"condition": "[거주제공확인서 날짜]", "kr": "서류 작성일은 거주/숙소 제공일 이후로 설정되어야 합니다. 현재 [월/일]로 되어 있는 날짜를 [월/일]로 수정해 주시기 바랍니다.", "t": {"en": "The document preparation date must be set after the date of residence/accommodation provision. Please correct the current date of [Month/Day] to [Month/Day].", "zh": "文件开具日期必须设定为居住/住宿提供日之后。请将目前显示为 [月/日] 的日期修改为 [月/일]。", "ja": "書類作成日は居住/宿泊提供日以降に設定される必要があります。現在 [月/日] となっている日付を [月/日] に修正してください。", "vi": "Ngày viết tài liệu phải được thiết lập sau ngày cung cấp nơi cư trú/chỗ ở. Vui lòng sửa đổi ngày hiện tại là [Tháng/Ngày] thành [Tháng/Ngày].", "ne": "कागजात तयार गरिएको मिति बसोबास/होस्टेल उपलब्ध गराइएको मितिपछि सेट गरिनुपर्छ। कृपया हालको [महिना/दिन] को मितिलाई [महिना/दिन] मा सच्याउनुहोला।", "uz": "Hujjat yozilgan sana yashash joyi taqdim etilgan sanadan keyin bo'lishi kerak. Iltimos, hozirgi [Oy/Kun] sanasini [Oy/Kun] sanasiga o'zgartiring.", "mn": "Баримт бичиг үүсгэсэн огноог оршин суух/байршуулах эрх олгосон огнооны дараа тохируулах ёстой. Одоогийн огнооны форматыг Сар өдрөөс Сар өдрөөр засна уу."}, "note": "날짜 부분은 필요시 가변적으로 기입하도록 공란이나 대괄호 표기 유지"}]}],"reference": [{"title": "참고 기준 1 · 거주제공자가 있는 경우 (타인 제공 숙소 검수 기준)", "structure": "집주인(소유자) ➔ 거주제공자(임차인 / 계약 당사자) ➔ 학생(실거주자)", "required_docs": ["① 거주/숙소제공 확인서 (작성일 30일 이내)", "② 거주제공자의 임대차 계약서 또는 등기부등본", "③ 거주제공자의 신분증 앞·뒷면 사본 (또는 사업자등록증)"], "table": {"headers": ["계약 형태 구분", "필수 제출 서류 목록", "주소 일치 및 검수 핵심 체크포인트", "추가 참고사항"], "rows": [["사업자 명의 (상업 숙소)", "거주제공확인서 + 사업자등록증 + 납부 영수증(이체내역)", "☆중요: 거주제공확인서 주소 = 영업신고증(사업자등록증) 주소 일치 필수. 단, 사업자 업종에 \"부동산업\"이 포함될 경우 불일치해도 가능", "영수증 미비 시 상세 계좌이체내역으로 확인 가능"], ["개인 명의 (지인/친척 등)", "거주제공확인서 + 임대차계약서(등기부등본) + 신분증 앞뒷면", "신분증 주민등록번호 뒷자리는 마스킹 가능 / 계약자 일치 확인", "전대차인 경우 전대동의 여부 및 원계약서 관계 확인"]]}}, {"title": "참고 기준 2 · 단기임대 숙소 검수 및 인정 기준", "table": {"headers": ["단기임대 유형", "계약 형태", "인정 여부 및 검수 기준", "보완 요구 사항 및 예외 규정"], "rows": [["enkor stay", "전대차 계약서 (계약서 형태 준수)", "개인계약으로 인정 가능 (승인 O)", "계약서 형태 준수 여부 및 서명 날인 확인"], ["고시원 / 리빙텔 / 스테이", "입실 계약서 등", "원칙상 개인계약 인정 불가 (예외: 사업자등록증 방)", "사업자등록증 보유 시 세부이체내역 제시하면 영수증으로 인정 승인"], ["비즈스테이 (비즈 호텔)", "장기 숙박 계약서", "일단 거주제공확인서로 조건부 인정 가능 (영수증 부재 시)", "사업자등록증 추가 요청 필수"]]}}]}, {"id": "physical", "name": "실물 서류", "desc": "실물 서류 제출 관련 보완 요청 멘트", "items": [{"condition": "[실물서류 보완사유]", "kr": "출입국 심사가 지연될 수 있으니 최대한 빨리 제출해 주세요.", "t": {"en": "Please submit it as soon as possible, as immigration processing may be delayed.", "zh": "请尽快提交，因为移民审批可能会延误。", "ja": "出入国審査が遅れることがありますので、できるだけ早く提出してください。", "vi": "Vui lòng nộp hồ sơ càng sớm càng tốt, vì quá trình xử lý hồ sơ nhập cư có thể bị chậm trễ.", "ne": "अध्यागमन प्रक्रियामा ढिलाइ हुन सक्ने भएकोले कृपया यसलाई सकेसम्म चाँडो बुझाउनुहोस्।", "uz": "Immigratsiya jarayoni kechikishi mumkinligi sababli, iltimos, uni iloji boricha tezroq yuboring.", "mn": "Цагаачлалын боловсруулалт хойшилж болзошгүй тул аль болох хурдан ирүүлнэ үү."}}], "reference": null}]}
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById('app-data').textContent);
+
+const KOREAN_PROOFREAD_REPLACEMENTS = [
+  ['->', '→'],
+  ['제출해주세요', '제출해 주세요'],
+  ['작성해주세요', '작성해 주세요'],
+  ['제출해주신', '제출해 주신'],
+  ['새여권', '새 여권'],
+  ['신청중', '신청 중'],
+  ['안보일', '안 보일'],
+  ['잘보이는', '잘 보이는'],
+  ['자필사유서', '자필 사유서'],
+  ['등록되어있는', '등록되어 있는'],
+  ['임대차계약서', '임대차 계약서'],
+  ['30일미만', '30일 미만'],
+  ['학생이름', '학생 이름'],
+  ['작성일자', '작성 일자'],
+  ['입학일자', '입학 일자'],
+  ['계속되는 보완으로 비교적 급한 경우', '반복 보완으로 비교적 긴급한 경우'],
+  ['증명사진 AI 사용한 경우', 'AI를 사용한 증명사진인 경우'],
+  ['머리카락으로 인해 귀가 안 보일 경우', '머리카락으로 인해 양쪽 귀가 보이지 않는 경우'],
+  ['화장이 너무 과한 경우', '화장이 너무 진한 경우'],
+  ['한쪽으로 쏠려있는 경우', '한쪽으로 치우친 경우'],
+  ['양쪽눈썹이 머리카락으로 인해 안 보일 경우', '머리카락으로 인해 양쪽 눈썹이 보이지 않는 경우'],
+  ['인물 주위가 불명확 할 경우', '인물 주변이 불분명한 경우'],
+  ['개강 전 발급 받은 서류', '개강 전에 발급받은 서류'],
+  ['스캔상태가 불선명할 경우', '스캔 상태가 불분명한 경우'],
+  ['다른 학기 등록금 납입 증명서를 제출한 경우', '다른 학기의 등록금 납입 증명서를 제출한 경우'],
+  ['분량 미충족', '분량이 부족한 경우'],
+  ['거래주소-기재주소 다른경우', '계약 주소와 기재 주소가 다른 경우'],
+  ['임대차계약서 만료 - 계약기간 30일 미만', '임대차 계약 만료 - 계약 기간 30일 미만'],
+  ['임대차계약서 만료 - 기간 만료됨', '임대차 계약 만료 - 계약 기간 만료'],
+  ['부동산계약서에 학생이름이 없는 경우', '부동산 계약서에 학생 이름이 없는 경우'],
+  ['거주제공확인서에 거주 숙소 제공일이 비어있는 경우', '거주 제공 확인서에 거주·숙소 제공일이 비어 있는 경우'],
+  ['거주제공확인서에 작성일이 비어있는 경우', '거주 제공 확인서에 작성일이 비어 있는 경우'],
+  ['거주제공확인서 날짜', '거주 제공 확인서 날짜'],
+  ['실물서류 보완사유', '실물 서류 보완 사유'],
+  ['임대차 계약서 만료 - 계약 기간 30일 미만', '임대차 계약 만료 - 계약 기간 30일 미만'],
+  ['임대차 계약서 만료 - 기간 만료됨', '임대차 계약 만료 - 계약 기간 만료'],
+  ['부동산계약서에 학생 이름이 없는 경우', '부동산 계약서에 학생 이름이 없는 경우'],
+  ['거주제공확인서', '거주 제공 확인서'],
+  ['비어있습니다', '비어 있습니다'],
+  ['계약기간', '계약 기간'],
+  ['스캔 상태가 불선명하여', '스캔 상태가 선명하지 않아'],
+  ['재적증명서입니다', '재적증명서에 해당합니다'],
+  ['자세하고 진정성 있는 자필 사유서', '구체적이고 진정성 있는 자필 사유서'],
+  ['작성 일자 필수입니다', '작성 일자를 반드시 기재해야 합니다'],
+  ['A4 용지 절반 이상 분량을 자필로 작성해 주세요', 'A4 용지의 절반 이상을 자필로 작성해 주세요'],
+  ['양쪽 머리카락을 귀 뒤로 넘겨 귀가 잘 보이는', '양쪽 머리카락을 귀 뒤로 넘겨 양쪽 귀가 잘 보이는'],
+  ['컬러렌즈를 착용한 증명사진', '컬러 렌즈를 착용한 증명사진'],
+  ['재제출을 요청드립니다', '다시 제출해 주시기 바랍니다'],
+  ['사진상 선명도 부족 등으로', '사진의 선명도가 부족하여'],
+  ['새 여권 변경 신고한 후', '새 여권으로 변경 신고를 한 후'],
+  ['새 여권을 신청 중이고 발급받지 않은 경우', '새 여권을 신청했으나 아직 발급받지 않은 경우'],
+  ['여권 기간 내 체류확인서', '여권 유효기간 내 체류확인서'],
+  ['기타 사항에 의하여 활용되지 않습니다', '다른 용도로 사용되지 않습니다'],
+  ['새로운 숙소를 찾으시는 것을 추천합니다', '새로운 숙소를 알아보시기를 권장합니다'],
+  ['승인 절차가 한층 더 원활하고 신속하게 진행됩니다', '승인 절차가 더욱 원활하고 신속하게 진행됩니다'],
+  ['다시 제출해 주시면 감사하겠습니다', '다시 제출해 주시기 바랍니다'],
+  ['거주,숙소', '거주·숙소'],
+  ['실물서류', '실물 서류'],
+  ['앞뒷면', '앞·뒷면'],
+  ['외국인이 거주할 수 없은 거주지', '외국인이 거주할 수 없는 거주지'],
+  ['Hikorea', 'HiKorea'],
+  ['여권 유효기간이 6개월 미만입니다', '여권 유효기간이 3개월 미만입니다'],
+  ['여권 유효기간이 3개월보다 미만일 경우', '여권 유효기간이 3개월 미만일 경우'],
+  ['연대전용-재학증명서 제출사항', '연세대학교 전용 - 재학증명서 제출 사항']
+];
+
+function proofreadKoreanText(text) {
+  return KOREAN_PROOFREAD_REPLACEMENTS.reduce(
+    (result, [before, after]) => result.split(before).join(after),
+    text || ''
+  );
+}
+
+function applyKoreanProofreading(data) {
+  data.categories.forEach(category => {
+    category.name = proofreadKoreanText(category.name);
+    category.desc = proofreadKoreanText(category.desc);
+    const groups = category.groups || [{ items: category.items || [] }];
+    groups.forEach(group => {
+      group.group = proofreadKoreanText(group.group);
+      group.items.forEach(item => {
+      item.condition = proofreadKoreanText(item.condition);
+      item.kr = proofreadKoreanText(item.kr);
+      if(item.note) item.note = proofreadKoreanText(item.note);
+      if(item.t) {
+        Object.keys(item.t).forEach(lang => {
+          item.t[lang] = removeClosingThanks(item.t[lang]);
+          if(lang === 'vi' || lang === 'ja') {
+            item.t[lang] = proofreadForeignTranslation(item.t[lang], lang);
+          }
+          if(category.id === 'passport' && item.condition.includes('여권 유효기간이 3개월 미만일 경우')) {
+            item.t[lang] = item.t[lang]
+              .replace(/\b6\s*months?\b/gi, '3 months')
+              .replace(/6\s*개월/g, '3개월')
+              .replace(/6\s*か月/g, '3か月')
+              .replace(/6\s*个月/g, '3个月')
+              .replace(/6\s*tháng/g, '3 tháng')
+              .replace(/6\s*oy/g, '3 oy')
+              .replace(/6\s*сар/g, '3 сар');
+          }
+        });
+      }
+      });
+    });
+  });
+}
+
+function removeClosingThanks(text) {
+  return String(text || '')
+    .replace(/(?:,?\s*)(?:thank you(?: for your cooperation)?|thanks for your cooperation|谢谢您的配合|谢谢配合|ご協力ありがとうございます|ご協力のほどよろしくお願いいたします|Cảm ơn sự hợp tác của bạn|Hamkorligingiz uchun rahmat|Хамтран ажилласанд баярлалаа)[.!。！]?\s*$/i, '')
+    .trim();
+}
+
+function proofreadForeignTranslation(text, lang) {
+  let result = String(text || '');
+  const replacements = lang === 'vi'
+    ? [
+        ['민원서식', 'biểu mẫu hành chính'],
+        ['여권 기간 내 체류확인서', 'Giấy xác nhận lưu trú trong thời hạn hộ chiếu'],
+        ['및', 'và'],
+        ['또는', 'hoặc'],
+        ['그리고', 'và'],
+        ['에서', ' tại'],
+        ['으로', ' bằng']
+      ]
+    : [
+        ['민원서식', '申請書式'],
+        ['여권 기간 내 체류확인서', 'パスポート有効期間内滞在確認書'],
+        ['및', 'および'],
+        ['또는', 'または'],
+        ['그리고', 'そして'],
+        ['에서', 'で'],
+        ['으로', 'で']
+      ];
+
+  replacements.forEach(([before, after]) => {
+    result = result.split(before).join(after);
+  });
+
+  return result
+    .replace(/\s*\([^()]*[가-힣][^()]*\)/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+}
+
+applyKoreanProofreading(DATA);
+
+const LANG_MAP = {
+  'fra': { code: 'fr', name: '프랑스어' }, 'fr': { code: 'fr', name: '프랑스어' }, 'french': { code: 'fr', name: '프랑스어' }, '프랑스어': { code: 'fr', name: '프랑스어' }, '프랑스': { code: 'fr', name: '프랑스어' },
+  'deu': { code: 'de', name: '독일어' }, 'ger': { code: 'de', name: '독일어' }, 'de': { code: 'de', name: '독일어' }, 'german': { code: 'de', name: '독일어' }, '독일어': { code: 'de', name: '독일어' }, '독일': { code: 'de', name: '독일어' },
+  'spa': { code: 'es', name: '스페인어' }, 'es': { code: 'es', name: '스페인어' }, 'spanish': { code: 'es', name: '스페인어' }, '스페인어': { code: 'es', name: '스페인어' }, '스페인': { code: 'es', name: '스페인어' },
+  'tha': { code: 'th', name: '태국어' }, 'th': { code: 'th', name: '태국어' }, 'thai': { code: 'th', name: '태국어' }, '태국어': { code: 'th', name: '태국어' }, '태국': { code: 'th', name: '태국어' },
+  'rus': { code: 'ru', name: '러시아어' }, 'ru': { code: 'ru', name: '러시아어' }, 'russian': { code: 'ru', name: '러시아어' }, '러시아어': { code: 'ru', name: '러시아어' }, '러시아': { code: 'ru', name: '러시아어' },
+  'zho': { code: 'zh', name: '중국어' }, 'chi': { code: 'zh', name: '중국어' }, 'zh': { code: 'zh', name: '중국어' }, 'chinese': { code: 'zh', name: '중국어' }, '중국어': { code: 'zh', name: '중국어' },
+  'eng': { code: 'en', name: '영어' }, 'en': { code: 'en', name: '영어' }, 'english': { code: 'en', name: '영어' }, '영어': { code: 'en', name: '영어' },
+  'jpn': { code: 'ja', name: '일본어' }, 'ja': { code: 'ja', name: '일본어' }, 'japanese': { code: 'ja', name: '일본어' }, '일본어': { code: 'ja', name: '일본어' },
+  'vie': { code: 'vi', name: '베트남어' }, 'vi': { code: 'vi', name: '베트남어' }, 'vietnamese': { code: 'vi', name: '베트남어' }, '베트남어': { code: 'vi', name: '베트남어' },
+  'nep': { code: 'ne', name: '네팔어' }, 'ne': { code: 'ne', name: '네팔어' }, 'nepali': { code: 'ne', name: '네팔어' }, '네팔어': { code: 'ne', name: '네팔어' },
+  'uzb': { code: 'uz', name: '우즈베크어' }, 'uz': { code: 'uz', name: '우즈베크어' }, 'uzbek': { code: 'uz', name: '우즈베크어' }, '우즈베크어': { code: 'uz', name: '우즈베크어' },
+  'mon': { code: 'mn', name: '몽골어' }, 'mn': { code: 'mn', name: '몽골어' }, 'mongolian': { code: 'mn', name: '몽골어' }, '몽골어': { code: 'mn', name: '몽골어' },
+  'kor': { code: 'ko', name: '한국어' }, 'ko': { code: 'ko', name: '한국어' }, 'korean': { code: 'ko', name: '한국어' }, '한국어': { code: 'ko', name: '한국어' },
+  'ita': { code: 'it', name: '이탈리아어' }, 'it': { code: 'it', name: '이탈리아어' }, 'italian': { code: 'it', name: '이탈리아어' }, '이탈리아어': { code: 'it', name: '이탈리아어' },
+  'por': { code: 'pt', name: '포르투갈어' }, 'pt': { code: 'pt', name: '포르투갈어' }, 'portuguese': { code: 'pt', name: '포르투갈어' }, '포르투갈어': { code: 'pt', name: '포르투갈어' },
+  'ara': { code: 'ar', name: '아랍어' }, 'ar': { code: 'ar', name: '아랍어' }, 'arabic': { code: 'ar', name: '아랍어' }, '아랍어': { code: 'ar', name: '아랍어' },
+  'hin': { code: 'hi', name: '힌디어' }, 'hi': { code: 'hi', name: '힌디어' }, 'hindi': { code: 'hi', name: '힌디어' }, '힌디어': { code: 'hi', name: '힌디어' },
+  'ind': { code: 'id', name: '인도네시아어' }, 'id': { code: 'id', name: '인도네시아어' }, 'indonesian': { code: 'id', name: '인도네시아어' }, '인도네시아어': { code: 'id', name: '인도네시아어' },
+  'msa': { code: 'ms', name: '말레이어' }, 'ms': { code: 'ms', name: '말레이어' }, 'malay': { code: 'ms', name: '말레이어' }, '말레이어': { code: 'ms', name: '말레이어' },
+  'fil': { code: 'tl', name: '필리핀어' }, 'tl': { code: 'tl', name: '필리핀어' }, 'tagalog': { code: 'tl', name: '필리핀어' }, 'filipino': { code: 'tl', name: '필리핀어' }, '필리핀어': { code: 'tl', name: '필리핀어' },
+  'tur': { code: 'tr', name: '터키어' }, 'tr': { code: 'tr', name: '터키어' }, 'turkish': { code: 'tr', name: '터키어' }, '터키어': { code: 'tr', name: '터키어' },
+  'pol': { code: 'pl', name: '폴란드어' }, 'pl': { code: 'pl', name: '폴란드어' }, 'polish': { code: 'pl', name: '폴란드어' }, '폴란드어': { code: 'pl', name: '폴란드어' },
+  'nld': { code: 'nl', name: '네덜란드어' }, 'dut': { code: 'nl', name: '네덜란드어' }, 'nl': { code: 'nl', name: '네덜란드어' }, 'dutch': { code: 'nl', name: '네덜란드어' }, '네덜란드어': { code: 'nl', name: '네덜란드어' },
+  'bur': { code: 'my', name: '미얀마어' }, 'mya': { code: 'my', name: '미얀마어' }, 'mmr': { code: 'my', name: '미얀마어' }, 'my': { code: 'my', name: '미얀마어' }, 'myanmar': { code: 'my', name: '미얀마어' }, 'burma': { code: 'my', name: '미얀마어' }, 'burmese': { code: 'my', name: '미얀마어' }, '미얀마어': { code: 'my', name: '미얀마어' }, '미얀마': { code: 'my', name: '미얀마어' }, '버마어': { code: 'my', name: '미얀마어' }, '버마': { code: 'my', name: '미얀마어' }
+};
+
+const GOOGLE_LANGUAGE_ALIASES = [
+  ['gl', '갈리시아어', ['galician']], ['gn', '과라니어', ['guarani']], ['gu', '구자라트어', ['gujarati']], ['el', '그리스어', ['greek']], ['kl', '그린란드어', ['greenlandic']], ['eu', '바스크어', ['basque']],
+  ['nv', '나바호어', ['navajo']], ['st', '남소토어', ['southern sotho']], ['na', '나우루어', ['둔두어', 'nauruan']], ['nl', '네덜란드어', ['dutch']], ['ne', '네팔어', ['nepali']], ['no', '노르웨이어', ['norwegian']], ['nus', '누에르어', ['nuer']],
+  ['fa-AF', '다리어', ['dari']], ['da', '덴마크어', ['danish']], ['dv', '디베히어', ['dhivehi']], ['doi', '도그리어', ['dogri']],
+  ['lo', '라오어', ['lao']], ['lv', '라트비아어', ['latvian']], ['la', '라틴어', ['latin']], ['ru', '러시아어', ['russian']], ['ro', '루마니아어', ['romanian']], ['lb', '룩셈부르크어', ['luxembourgish']], ['rn', '룬디어', ['rundi']], ['rw', '르완다어', ['kinyarwanda']], ['lt', '리투아니아어', ['lithuanian']], ['ln', '링갈라어', ['lingala']],
+  ['mr', '마라티어', ['marathi']], ['mh', '마샬어', ['marshallese']], ['mai', '마이틸리어', ['maithili']], ['mk', '마케도니아어', ['macedonian']], ['mg', '말라가시어', ['malagasy']], ['ml', '말라얄람어', ['malayalam']], ['ms', '말레이어', ['malay']], ['ms-Arab', '말레이어(자위)', ['jawi']], ['mt', '몰타어', ['maltese']], ['mni-Mtei', '메이테이어(마니푸르어)', ['meiteilon', 'manipuri']], ['mfe', '모리셔스 크리올어', ['mauritian creole']], ['mn', '몽골어', ['mongolian']], ['my', '미얀마어(버마어)', ['myanmar', 'burmese', 'burma']], ['mzo', '미조어', ['mizo']],
+  ['ba', '바시키르어', ['bashkir']], ['bm', '밤바라어', ['bambara']], ['ban', '발리어', ['balinese']], ['vi', '베트남어', ['vietnamese']], ['be', '벨라루스어', ['belarusian']], ['bn', '벵골어', ['bengali']], ['bs', '보스니아어', ['bosnian']], ['nso', '북소토어', ['northern sotho']], ['bg', '불가리아어', ['bulgarian']], ['br', '브르타뉴어', ['breton']],
+  ['sm', '사모아어', ['samoan']], ['sa', '산스크리트어', ['sanskrit']], ['sat', '산탈리어', ['santali']], ['sr', '세르비아어', ['serbian']], ['ceb', '세부아노어', ['cebuano']], ['crs', '세이셸 크리올어', ['seychellois creole']], ['so', '소말리아어', ['somali']], ['sn', '쇼나어', ['shona']], ['su', '순다어', ['sundanese']], ['sw', '스와힐리어', ['swahili']], ['sv', '스웨덴어', ['swedish']], ['gd', '스코틀랜드 게일어', ['scots gaelic']], ['es', '스페인어', ['spanish']], ['sk', '슬로바키아어', ['slovak']], ['sl', '슬로베니아어', ['slovenian']], ['sd', '신드어', ['sindhi']], ['si', '싱할라어', ['sinhala']],
+  ['ar', '아랍어', ['arabic', '아라비아어']], ['hy', '아르메니아어', ['armenian']], ['rup', '아루마니아어', ['aromanian']], ['as', '아삼어', ['assamese']], ['ht', '아이티 크리올어', ['haitian creole']], ['ga', '아일랜드어', ['irish']], ['az', '아제르바이잔어', ['azerbaijani']], ['af', '아프리칸스어', ['afrikaans']], ['sq', '알바니아어', ['albanian']], ['am', '암하라어', ['amharic']], ['sah', '야쿠트어', ['yakut']], ['or', '오리야어', ['odia', 'oriya']], ['om', '오로모어', ['oromo']], ['yo', '요루바어', ['yoruba']], ['uz', '우즈베크어', ['uzbek']], ['uk', '우크라이나어', ['ukrainian']], ['ur', '우르두어', ['urdu']], ['ug', '위구르어', ['uyghur']], ['cy', '웨일스어', ['welsh']], ['ig', '이보어', ['igbo']], ['yi', '이디시어', ['yiddish']], ['it', '이탈리아어', ['italian']], ['id', '인도네시아어', ['indonesian']], ['ja', '일본어', ['japanese']], ['en', '영어', ['english']],
+  ['jv', '자바어', ['javanese']], ['ka', '조지아어', ['georgian']], ['zu', '줄루어', ['zulu']], ['zh-CN', '중국어(간체)', ['simplified chinese', '중국어 간체']], ['zh-TW', '중국어(번체)', ['traditional chinese', '중국어 번체']], ['dz', '종카어', ['dzongkha']],
+  ['ce', '체첸어', ['chechen']], ['cs', '체코어', ['czech']], ['ny', '치체와어', ['chichewa']], ['ts', '츠공가어', ['tsonga']], ['tn', '츠와나어', ['tswana']],
+  ['kk', '카자흐어', ['kazakh']], ['ca', '카탈루냐어', ['catalan']], ['kn', '칸나다어', ['kannada']], ['kr', '칸누리어', ['kanuri']], ['qu', '케추아어', ['quechua']], ['co', '코르시카어', ['corsican']], ['xh', '코사어', ['xhosa']], ['hr', '크로아티아어', ['croatian']], ['km', '크메르어', ['khmer']], ['crh', '크림 타타르어', ['crimean tatar']], ['ku', '쿠르드어(쿠르만지)', ['kurmanji']], ['ckb', '쿠르드어(소라니)', ['sorani']], ['ky', '키르기스어', ['kyrgyz']],
+  ['tl', '타갈로그어(필리핀어)', ['tagalog', 'filipino']], ['tg', '타지크어', ['tajik']], ['tt', '타타르어', ['tatar']], ['ta', '타밀어', ['tamil']], ['th', '태국어', ['thai']], ['tr', '터키어', ['turkish']], ['tk', '투르크멘어', ['turkmen']], ['ti', '티그리냐어', ['tigrinya']],
+  ['ps', '파슈토어', ['pashto']], ['pa', '펀자브어', ['punjabi']], ['fa', '페르시아어', ['persian']], ['pt', '포르투갈어', ['portuguese']], ['pl', '폴란드어', ['polish']], ['fr', '프랑스어', ['french']], ['fy', '프리스랜드어', ['frisian']], ['fi', '핀란드어', ['finnish']],
+  ['ko', '한국어', ['korean']], ['hu', '헝가리어', ['hungarian']], ['he', '히브리어', ['hebrew', '헵브리어']], ['haw', '하와이어', ['hawaiian']], ['ha', '하우사어', ['hausa']], ['hi', '힌디어', ['hindi']], ['hmn', '몽어', ['hmong']]
+];
+
+GOOGLE_LANGUAGE_ALIASES.forEach(([code, name, aliases]) => {
+  [code, name, ...aliases].forEach(alias => {
+    LANG_MAP[String(alias).toLowerCase().trim()] = { code, name };
+  });
+});
+
+function normalizeLanguageCode(inputStr, fallbackCode = 'en') {
+  const clean = String(inputStr || '').toLowerCase().trim();
+  const mapped = LANG_MAP[clean];
+  if(mapped) return mapped.code;
+  if(/^[a-z]{2}$/.test(clean)) return clean;
+  return fallbackCode;
+}
+
+function parseFlexibleLang(inputStr) {
+  const original = String(inputStr || '').trim();
+  const clean = original.toLowerCase();
+  const mapped = LANG_MAP[clean];
+  return {
+    code: normalizeLanguageCode(original),
+    name: mapped ? mapped.name : (original || '영어')
+  };
+}
+
+let favorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
+let customSavedMents = JSON.parse(localStorage.getItem('user_saved_ments') || '[]');
+
+let state = {
+  catId: 'passport',
+  itemKey: null,
+  lang: null,
+  refCollapsed: true,
+  searchQuery: '',
+  
+  // 맞춤 보완 문장 번역기 상태
+  customText: '',
+  customLangInput: 'en',
+  isCustomInput: false,
+  isFirmTone: false,
+  claudeApiKey: sessionStorage.getItem('claude_api_key') || '',
+  geminiApiKey: sessionStorage.getItem('gemini_api_key') || '',
+  customResult: '',
+  usedEngineName: '',
+  isTranslating: false,
+
+  // 일반 카테고리 맞춤 언어 번역 상태
+  itemCustomLangInput: '',
+  isItemCustomActive: false,
+  itemCustomResult: '',
+  itemUsedEngineName: '',
+  isItemTranslating: false,
+  itemTranslationRequestId: 0,
+  collapsedGroups: {}
+};
+
+// 개별 문장 고유 키 할당 (즐겨찾기 정확도 향상)
+function flatItems(cat){
+  if(!cat || !cat.items && !cat.groups) return [];
+  if(cat.items){
+    return cat.items.map((it, i) => ({ key: cat.id + '_i' + i, group: null, item: it, catId: cat.id, catName: cat.name }));
+  }
+  const out = [];
+  cat.groups.forEach((g, gi) => {
+    g.items.forEach((it, i) => out.push({ key: cat.id + '_g' + gi + '_i' + i, group: g.group, item: it, catId: cat.id, catName: cat.name }));
+  });
+  return out;
+}
+
+function getAllFlatItems() {
+  let all = [];
+  DATA.categories.forEach(cat => {
+    all = all.concat(flatItems(cat));
+  });
+  return all;
+}
+
+function renderRail(){
+  const nav = document.getElementById('railNav');
+  nav.innerHTML = '';
+
+  const specialBtn = document.createElement('button');
+  specialBtn.className = 'rail-item special' + (state.catId === 'custom-translator' ? ' active' : '');
+  specialBtn.innerHTML = '<span>⚡ 맞춤 보완 문장 번역기</span>';
+  specialBtn.onclick = () => {
+    saveCurrentInputs();
+    state.catId = 'custom-translator';
+    state.searchQuery = '';
+    const searchEl = document.getElementById('searchInput');
+    if(searchEl) searchEl.value = '';
+    renderAll();
+  };
+  nav.appendChild(specialBtn);
+
+  const favBtn = document.createElement('button');
+  favBtn.className = 'rail-item fav-tab' + (state.catId === 'favorites' ? ' active' : '');
+  favBtn.innerHTML = '<span>⭐ 즐겨찾기 한 멘트 (' + favorites.length + ')</span>';
+  favBtn.onclick = () => {
+    saveCurrentInputs();
+    state.catId = 'favorites';
+    state.searchQuery = '';
+    const searchEl = document.getElementById('searchInput');
+    if(searchEl) searchEl.value = '';
+    state.itemKey = null;
+    renderAll();
+  };
+  nav.appendChild(favBtn);
+
+  DATA.categories.forEach((cat, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'rail-item' + (!state.searchQuery && cat.id === state.catId ? ' active' : '');
+    btn.innerHTML = '<span class="n">'+String(idx+1).padStart(2,'0')+'</span><span>'+cat.name+'</span>';
+    btn.onclick = () => {
+      saveCurrentInputs();
+      state.catId = cat.id;
+      state.searchQuery = '';
+      const searchEl = document.getElementById('searchInput');
+      if(searchEl) searchEl.value = '';
+      state.itemKey = null;
+      state.lang = null;
+      state.isItemCustomActive = false;
+      state.itemCustomResult = '';
+      renderAll();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+function bindSettingsPanel() {
+  const settingsPanel = document.getElementById('settingsPanel');
+  const geminiInput = document.getElementById('railGeminiApiKey');
+  const claudeInput = document.getElementById('railClaudeApiKey');
+  if(!settingsPanel || !geminiInput || !claudeInput) return;
+
+  geminiInput.value = state.geminiApiKey;
+  claudeInput.value = state.claudeApiKey;
+  if(settingsPanel.dataset.bound === 'true') return;
+
+  geminiInput.addEventListener('change', event => saveApiKey('gemini', event.target.value));
+  claudeInput.addEventListener('change', event => saveApiKey('claude', event.target.value));
+  settingsPanel.dataset.bound = 'true';
+}
+
+function toggleSettings() {
+  const settingsPanel = document.getElementById('settingsPanel');
+  if(!settingsPanel) return;
+  settingsPanel.open = !settingsPanel.open;
+  const settingsButton = document.querySelector('.mobile-settings-btn');
+  if(settingsButton) {
+    settingsButton.setAttribute('aria-expanded', String(settingsPanel.open));
+    settingsButton.setAttribute('aria-label', settingsPanel.open ? '설정 닫기' : '설정 열기');
+    settingsButton.title = settingsPanel.open ? '설정 닫기' : '설정 열기';
+  }
+}
+
+function toggleFavorite(itemKey, event) {
+  if(event) event.stopPropagation();
+  const idx = favorites.indexOf(itemKey);
+  if(idx > -1) {
+    favorites.splice(idx, 1);
+  } else {
+    favorites.push(itemKey);
+  }
+  localStorage.setItem('user_favorites', JSON.stringify(favorites));
+  renderAll();
+}
+
+function handleSearch(query) {
+  saveCurrentInputs();
+  state.searchQuery = query.trim();
+  renderAll();
+}
+
+function saveCurrentInputs() {
+  const txtArea = document.getElementById('customKrText');
+  if(txtArea) state.customText = txtArea.value;
+
+  const customLangEl = document.getElementById('inputFlexibleLang');
+  if(customLangEl) state.customLangInput = customLangEl.value;
+
+  const itemLangEl = document.getElementById('itemCustomLangInputEl');
+  if(itemLangEl) state.itemCustomLangInput = itemLangEl.value;
+
+  const toneChk = document.getElementById('firmToneChk');
+  if(toneChk) state.isFirmTone = toneChk.checked;
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function decodeHtmlEntities(text) {
+  const decoder = document.createElement('textarea');
+  decoder.innerHTML = text || '';
+  return decoder.value;
+}
+
+function normalizeSearchText(text) {
+  return (text || '').normalize('NFKC').toLowerCase().replace(/[\s\u200B\u200C\u200D]+/g, '');
+}
+
+function getGroupStateKey(entry) {
+  return entry.catId + '::' + (entry.group || entry.catName);
+}
+
+function formatTableCell(text) {
+  let safe = escapeHtml(text);
+  safe = safe.replace(/☆중요/g, '<span class="badge-highlight important">☆중요</span>');
+  safe = safe.replace(/\(승인 O\)/g, '<span class="badge-highlight pass">(승인 O)</span>');
+  return safe;
+}
+
+function renderRefBlock(ref){
+  let html = '';
+  if(ref.structure){
+    html += '<div class="ref-block"><h4>기본 관계 구조</h4><p class="ref-line">'+escapeHtml(ref.structure)+'</p></div>';
+  }
+  if(ref.required_docs){
+    html += '<div class="ref-block"><h4>필수 제출 서류</h4><ul class="ref-list">'+
+      ref.required_docs.map(d=>'<li>'+escapeHtml(d)+'</li>').join('')+'</ul></div>';
+  }
+  if(ref.formula){
+    html += '<div class="ref-block"><h4>'+escapeHtml(ref.formula.label)+'</h4><div class="ref-formula">'+escapeHtml(ref.formula.value)+'</div></div>';
+  }
+  if(ref.conditions){
+    html += '<div class="ref-block"><h4>'+escapeHtml(ref.conditions.label)+'</h4><ul class="ref-list">'+
+      ref.conditions.items.map(c=>'<li>'+escapeHtml(c)+'</li>').join('')+'</ul></div>';
+  }
+  if(ref.table){
+    html += '<div class="ref-block"><h4>상세 세부 기준표</h4><div class="table-scroll-container"><table class="ref-table"><thead><tr>'+
+      ref.table.headers.map(h=>'<th>'+escapeHtml(h)+'</th>').join('')+
+      '</tr></thead><tbody>'+
+      ref.table.rows.map(r=>'<tr>'+r.map(c=>'<td>'+formatTableCell(c)+'</td>').join('')+'</tr>').join('')+
+      '</tbody></table></div></div>';
+  }
+  return html;
+}
+
+function renderReferencePanel(cat){
+  if(!cat || !cat.reference) return '';
+  const collapsedClass = state.refCollapsed ? ' collapsed' : '';
+  const blocks = cat.reference.map(ref => renderRefBlock(ref)).join('');
+  
+  return '<aside class="ref-panel'+collapsedClass+'" id="refPanelArea">'+
+    '<div class="ref-panel-head" role="button" tabindex="0" aria-expanded="'+(!state.refCollapsed)+'" onclick="toggleRefPanel(event)" onkeydown="if(event.key === \'Enter\' || event.key === \' \'){ event.preventDefault(); toggleRefPanel(event); }">'+
+      '<div class="ref-panel-head-title"><span class="pin">📌</span><h3>참고 기준 및 가이드</h3><span class="ref-toggle-badge">펼치기/접기</span></div>'+
+      '<span class="ref-toggle-icon">▼</span>'+
+    '</div>'+
+    '<div class="ref-panel-body">'+blocks+'</div>'+
+  '</aside>';
+}
+
+function toggleRefPanel(event) {
+  if(event) event.stopPropagation();
+  state.refCollapsed = !state.refCollapsed;
+  document.querySelectorAll('.ref-panel').forEach(panel => {
+    panel.classList.toggle('collapsed', state.refCollapsed);
+    const header = panel.querySelector('.ref-panel-head');
+    if(header) header.setAttribute('aria-expanded', String(!state.refCollapsed));
+  });
+}
+
+// 1순위: 우측 상단 고정 상세 문장 카드 (내부 스크롤)
+function renderStickyDetailCard(cat, items) {
+  const entry = items.find(e => e.key === state.itemKey);
+  if(!entry){
+    return '<div class="detail-empty">👈 좌측 목록에서 보완 멘트를 선택하면 이곳에서 문장과 언어를 선택할 수 있습니다.</div>';
+  }
+  const it = entry.item;
+  let html = '<div class="detail-card-sticky"><div class="detail-card-scroll-area">';
+  html += '<div class="detail-head"><div class="cond-tag">'+escapeHtml(it.condition)+'</div>'+
+    '<div class="kr-text">'+escapeHtml(it.kr)+'</div></div>';
+
+  if(it.note){
+    html += '<div class="detail-note">ℹ️ '+escapeHtml(it.note)+'</div>';
+  }
+
+  html += '<div class="lang-bar">';
+  DATA.langs.forEach(([code, label]) => {
+    const active = !state.isItemCustomActive && code === state.lang;
+    html += '<button class="lang-chip'+(active?' active':'')+'" onclick="selectPresetItemLang(\''+code+'\')">'+escapeHtml(label.split(' ')[0])+'</button>';
+  });
+  
+  const customActive = state.isItemCustomActive;
+  html += '<button class="lang-chip custom-btn'+(customActive?' active':'')+'" onclick="toggleItemCustomLang(true)">🌐 맞춤 언어 직접 입력</button>';
+  html += '</div>';
+
+  if(state.isItemCustomActive) {
+    html += `
+      <div class="custom-lang-bar-input">
+        <input type="text" id="itemCustomLangInputEl" class="form-control" style="max-width:260px;" placeholder="예: 프랑스어, fra, 태국어, th 등" value="${escapeHtml(state.itemCustomLangInput)}">
+        <button class="translate-action-btn" style="width:auto; padding:6px 14px; font-size:12px;" onclick="handleItemCustomTranslate()" ${state.isItemTranslating?'disabled':''}>
+          ${state.isItemTranslating ? '⏳ 번역중...' : 'AI 번역하기'}
+        </button>
+      </div>
+    `;
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+// 2순위: 우측 중간 번역 결과 카드 (내부 스크롤)
+function renderStickyResultCard(cat, items) {
+  const entry = items.find(e => e.key === state.itemKey);
+  if(!entry) return '';
+  const it = entry.item;
+
+  if(state.isItemCustomActive && state.itemCustomResult) {
+    const parsed = parseFlexibleLang(state.itemCustomLangInput);
+    return `
+      <div class="result-card-sticky">
+        <div class="result-card-head">
+          <h3>✨ ${escapeHtml(parsed.name)} 번역 결과</h3>
+        </div>
+        <div class="result-card-scroll-body">
+          <div class="result-box">
+            <div class="result-block-header">
+              <span class="lbl">번역문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(state.itemCustomResult)}" onclick="copyFromButton(this)">번역문만 복사</button>
+            </div>
+            <div class="translated">${escapeHtml(state.itemCustomResult)}</div>
+            
+            <div class="result-block-header">
+              <span class="lbl">한국어 원문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(it.kr)}" onclick="copyFromButton(this)">원문만 복사</button>
+            </div>
+            <div class="original">${escapeHtml(it.kr)}</div>
+            <div class="engine-tag">💡 Engine: ${escapeHtml(state.itemUsedEngineName)}</div>
+          </div>
+        </div>
+        <button class="copy-btn" data-copy-translation="${escapeHtml(state.itemCustomResult)}" data-copy-original="${escapeHtml(it.kr)}" onclick="copyCombinedFromButton(this)">📋 전체 복사하기 (번역문 + 원문)</button>
+      </div>
+    `;
+  } else if(!state.isItemCustomActive && state.lang && it.t[state.lang]) {
+    const translated = it.t[state.lang];
+    const langLabel = DATA.langs.find(l => l[0] === state.lang)?.[1] || state.lang;
+    return `
+      <div class="result-card-sticky">
+        <div class="result-card-head">
+          <h3>✨ ${escapeHtml(langLabel)} 번역 결과</h3>
+        </div>
+        <div class="result-card-scroll-body">
+          <div class="result-box">
+            <div class="result-block-header">
+              <span class="lbl">번역문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(translated)}" onclick="copyFromButton(this)">번역문만 복사</button>
+            </div>
+            <div class="translated">${escapeHtml(translated)}</div>
+            
+            <div class="result-block-header">
+              <span class="lbl">한국어 원문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(it.kr)}" onclick="copyFromButton(this)">원문만 복사</button>
+            </div>
+            <div class="original">${escapeHtml(it.kr)}</div>
+            <div class="engine-tag">💡 DB 수록 검수 멘트</div>
+          </div>
+        </div>
+        <button class="copy-btn" data-copy-translation="${escapeHtml(translated)}" data-copy-original="${escapeHtml(it.kr)}" onclick="copyCombinedFromButton(this)">📋 전체 복사하기 (번역문 + 원문)</button>
+      </div>
+    `;
+  }
+  return '';
+}
+
+function renderItemList(items, cat){
+  let html = '<div class="item-list">';
+  const groups = [];
+  items.forEach(entry => {
+    const groupKey = getGroupStateKey(entry);
+    let group = groups[groups.length - 1];
+    if(!group || group.key !== groupKey) {
+      group = { key: groupKey, label: entry.group || entry.catName, collapsible: Boolean(entry.group), entries: [] };
+      groups.push(group);
+    }
+    group.entries.push(entry);
+  });
+
+  groups.forEach(group => {
+    const collapsed = group.collapsible && state.collapsedGroups[group.key];
+    if(group.collapsible) {
+      html += '<button class="group-toggle" type="button" onclick="toggleGroup(\''+escapeJsString(group.key)+'\')">'+
+        '<span>'+escapeHtml(group.label)+'</span>'+
+        '<span class="group-toggle-icon">'+(collapsed?'▶':'▼')+'</span>'+ 
+        '</button>';
+    } else {
+      html += '<div class="group-label">'+escapeHtml(group.label)+'</div>';
+    }
+    if(collapsed) return;
+
+    group.entries.forEach(entry => {
+      const active = entry.key === state.itemKey;
+      const isFav = favorites.includes(entry.key);
+      html += '<div class="item-row-wrap">'+
+        '<button class="item-row'+(active?' active':'')+'" data-key="'+entry.key+'" data-cat="'+entry.catId+'">'+
+          '<div class="cond">'+escapeHtml(entry.item.condition)+'</div>'+
+          '<div class="kr-preview">'+escapeHtml(entry.item.kr)+'</div>'+
+        '</button>'+ 
+        '<button class="fav-btn'+(isFav?' active':'')+'" onclick="toggleFavorite(\''+entry.key+'\', event)">'+(isFav?'★':'☆')+'</button>'+ 
+      '</div>';
+      if(active) {
+        html += '<div class="mobile-detail-slot">'+
+          renderStickyDetailCard(cat, items)+
+          renderStickyResultCard(cat, items)+
+          renderReferencePanel(cat)+
+          '</div>';
+      }
+    });
+  });
+  html += '</div>';
+  return html;
+}
+
+function toggleGroup(groupKey) {
+  state.collapsedGroups[groupKey] = !state.collapsedGroups[groupKey];
+  renderAll();
+}
+
+function escapeJsString(str) {
+  return (str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+}
+
+function selectPresetItemLang(code) {
+  saveCurrentInputs();
+  state.isItemCustomActive = false;
+  state.itemCustomResult = '';
+  state.lang = code;
+  renderAll();
+}
+
+function toggleItemCustomLang(val) {
+  saveCurrentInputs();
+  state.isItemCustomActive = val;
+  if(val) state.itemCustomResult = '';
+  renderAll();
+}
+
+async function handleItemCustomTranslate() {
+  saveCurrentInputs();
+  const allItems = getAllFlatItems();
+  const entry = allItems.find(e => e.key === state.itemKey);
+  if(!entry || !state.itemCustomLangInput.trim()) {
+    alert('번역할 언어명이나 언어 코드를 입력해 주세요.');
+    return;
+  }
+
+  const requestId = ++state.itemTranslationRequestId;
+  const requestedItemKey = state.itemKey;
+  const requestedLangInput = state.itemCustomLangInput;
+  state.isItemTranslating = true;
+  renderAll();
+
+  try {
+    const parsed = parseFlexibleLang(state.itemCustomLangInput);
+    if(!parsed.code) {
+      throw new Error('지원하지 않는 언어입니다. 언어 코드(예: fr, de)를 입력해 주세요.');
+    }
+    const res = await multiEngineTranslate(entry.item.kr, parsed.code, parsed.name, false);
+    if(requestId === state.itemTranslationRequestId && state.itemKey === requestedItemKey && state.itemCustomLangInput === requestedLangInput) {
+      state.itemCustomResult = res.text;
+      state.itemUsedEngineName = res.engine;
+    }
+  } catch(e) {
+    if(requestId === state.itemTranslationRequestId) alert('번역 오류: ' + e.message);
+  } finally {
+    if(requestId === state.itemTranslationRequestId) state.isItemTranslating = false;
+    renderAll();
+  }
+}
+
+// 맞춤 보완 문장 번역기 View
+function renderCustomTranslatorView() {
+  const presetLangs = [
+    { code: 'en', name: '영어' },
+    { code: 'zh', name: '중국어' },
+    { code: 'ja', name: '일본어' },
+    { code: 'vi', name: '베트남어' },
+    { code: 'ne', name: '네팔어' },
+    { code: 'uz', name: '우즈베크어' },
+    { code: 'mn', name: '몽골어' }
+  ];
+
+  let langButtonsHtml = presetLangs.map(l => {
+    const isSel = !state.isCustomInput && state.customLangInput === l.code;
+    return `<button class="lang-opt-btn ${isSel?'active':''}" onclick="selectPresetLang('${l.code}')">${l.name}</button>`;
+  }).join('');
+
+  const isCustomActive = state.isCustomInput;
+  langButtonsHtml += `<button class="lang-opt-btn ${isCustomActive?'active':''}" onclick="toggleCustomLangInput(true)">✏️ 직접 입력 (FRA 등)</button>`;
+
+  let savedMentsHtml = customSavedMents.map((text, i) => `
+    <div class="custom-saved-item" onclick="loadSavedCustomText(${i})">
+      <span>📝 ${escapeHtml(text)}</span>
+      <button onclick="deleteSavedCustomText(${i}, event)" style="border:none; background:none; color:var(--color-red-500); cursor:pointer;">✕</button>
+    </div>
+  `).join('');
+
+  return `
+    <div class="cat-header">
+      <div>
+        <h1>⚡ 맞춤 보완 문장 번역기</h1>
+        <p>필요한 보완 문장을 한국어로 직접 입력하면 다국어 번역문과 원문을 한꺼번에 생성합니다.</p>
+      </div>
+    </div>
+
+    <div class="translator-card">
+      <div class="form-group">
+        <label>1. 보완 요청 한국어 문장 입력</label>
+        <textarea id="customKrText" class="form-control" placeholder="예: 제출해주신 서류의 유효기간이 지났습니다. 최근 3개월 이내 발급된 서류로 다시 제출해 주세요.">${escapeHtml(state.customText)}</textarea>
+        <button class="btn-save-custom" onclick="saveCustomMent()">➕ 내 전용 멘트로 저장하기</button>
+      </div>
+
+      ${customSavedMents.length > 0 ? `
+        <div class="custom-saved-list">
+          <label style="font-size:11px; font-weight:600; color:var(--color-gray-700); display:block; margin-bottom:6px;">📁 내가 저장한 맞춤 멘트 목록 (클릭하여 불러오기)</label>
+          ${savedMentsHtml}
+        </div>
+      ` : ''}
+
+      <div class="form-group" style="margin-top:1rem;">
+        <label>2. 번역할 목적 언어 선택</label>
+        <div class="lang-select-grid">${langButtonsHtml}</div>
+
+        ${state.isCustomInput ? `
+          <div class="custom-input-box">
+            <label style="font-size:11px; display:block; margin-bottom:4px; color:var(--color-gray-700);">언어명(프랑스어, 태국어 등) 또는 2~3자리 언어코드(fra, th, de)를 입력하세요.</label>
+            <input type="text" id="inputFlexibleLang" class="form-control" placeholder="예: FRA, 프랑스어, 태국어, th, german 등" value="${escapeHtml(state.customLangInput)}">
+          </div>
+        ` : ''}
+
+        <label class="tone-checkbox-label">
+          <input type="checkbox" id="firmToneChk" ${state.isFirmTone?'checked':''}>
+          <span>☑️ 단호하고 확고한 말투로 번역하기 (행정 경고 / 보완 규정 강조 어조)</span>
+        </label>
+      </div>
+
+      <div style="margin-top: 1.25rem;">
+        <button class="translate-action-btn" id="runTranslateBtn" ${state.isTranslating?'disabled':''} onclick="handleCustomTranslate()">
+          ${state.isTranslating ? '⏳ 다중 AI 엔진 번역 진행 중...' : '🌐 실시간 번역 생성하기'}
+        </button>
+      </div>
+
+      ${state.customResult ? `
+        <div class="result" style="padding:0; margin-top:1.5rem;">
+          <div class="result-box">
+            <div class="result-block-header">
+              <span class="lbl">번역문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(state.customResult)}" onclick="copyFromButton(this)">번역문만 복사</button>
+            </div>
+            <div class="translated">${escapeHtml(state.customResult)}</div>
+            
+            <div class="result-block-header" style="border-top:1px solid var(--color-gray-200);">
+              <span class="lbl">한국어 원문</span>
+              <button class="btn-mini-copy" data-copy-text="${escapeHtml(state.customText)}" onclick="copyFromButton(this)">원문만 복사</button>
+            </div>
+            <div class="original">${escapeHtml(state.customText)}</div>
+            <div class="engine-tag">💡 Engine: ${escapeHtml(state.usedEngineName)}</div>
+          </div>
+          <button class="copy-btn" id="copyCustomBtn" data-copy-translation="${escapeHtml(state.customResult)}" data-copy-original="${escapeHtml(state.customText)}" onclick="copyCombinedFromButton(this)">📋 전체 복사하기 (번역문 + 원문)</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function saveCustomMent() {
+  const txtArea = document.getElementById('customKrText');
+  const val = txtArea ? txtArea.value.trim() : '';
+  if(!val) {
+    alert('저장할 멘트를 입력해 주세요.');
+    return;
+  }
+  if(!customSavedMents.includes(val)) {
+    customSavedMents.push(val);
+    localStorage.setItem('user_saved_ments', JSON.stringify(customSavedMents));
+    alert('내 전용 멘트에 저장되었습니다!');
+    renderAll();
+  }
+}
+
+function loadSavedCustomText(idx) {
+  state.customText = customSavedMents[idx];
+  renderAll();
+}
+
+function deleteSavedCustomText(idx, event) {
+  event.stopPropagation();
+  customSavedMents.splice(idx, 1);
+  localStorage.setItem('user_saved_ments', JSON.stringify(customSavedMents));
+  renderAll();
+}
+
+function selectPresetLang(code) {
+  saveCurrentInputs();
+  state.isCustomInput = false;
+  state.customLangInput = code;
+  renderAll();
+}
+
+function toggleCustomLangInput(val) {
+  saveCurrentInputs();
+  state.isCustomInput = val;
+  renderAll();
+}
+
+function saveApiKey(type, val) {
+  if(type === 'claude') {
+    state.claudeApiKey = val.trim();
+    sessionStorage.setItem('claude_api_key', state.claudeApiKey);
+  } else if(type === 'gemini') {
+    state.geminiApiKey = val.trim();
+    sessionStorage.setItem('gemini_api_key', state.geminiApiKey);
+  }
+}
+
+async function handleCustomTranslate() {
+  saveCurrentInputs();
+
+  if(!state.customText.trim()) {
+    alert('번역할 한국어 문장을 입력해주세요.');
+    return;
+  }
+
+  state.isTranslating = true;
+  renderAll();
+
+  try {
+    const parsed = parseFlexibleLang(state.customLangInput);
+    if(!parsed.code) {
+      throw new Error('지원하지 않는 언어입니다. 언어 코드(예: fr, de)를 입력해 주세요.');
+    }
+    const res = await multiEngineTranslate(state.customText, parsed.code, parsed.name, state.isFirmTone);
+    state.customResult = res.text;
+    state.usedEngineName = res.engine;
+  } catch(err) {
+    console.error(err);
+    alert('번역 처리 중 오류가 발생했습니다: ' + err.message);
+  } finally {
+    state.isTranslating = false;
+    renderAll();
+  }
+}
+
+// 3중 하이브리드 번역 엔진 (1순위 Gemini ➔ 2순위 Claude ➔ 3순위 Google Web)
+async function multiEngineTranslate(text, langCode, langName, isFirm) {
+  const toneInstruction = isFirm 
+    ? "Use a firm, authoritative, strict official policy tone (commanding / mandatory administrative style)."
+    : "Use a polite, clear, and professional administrative service tone.";
+  const engineLangName = langCode === 'en' ? 'English (en)' : langName;
+
+  const useEnglishBridge = langCode !== 'en';
+
+  // 1순위: Gemini AI Engine (메인)
+  if(state.geminiApiKey) {
+    try {
+      const resText = await translateWithGeminiPipeline(state.geminiApiKey, text, engineLangName, toneInstruction, useEnglishBridge);
+      return { text: resText, engine: useEnglishBridge ? 'Google Gemini 1.5 AI · 영어 경유' : 'Google Gemini 1.5 AI (메인)' };
+    } catch(e) { console.warn('Gemini Error, fallbacking...', e); }
+  }
+
+  // 2순위: Claude AI Engine (보조)
+  if(state.claudeApiKey) {
+    try {
+      const resText = await translateWithClaudePipeline(state.claudeApiKey, text, engineLangName, toneInstruction, useEnglishBridge);
+      return { text: resText, engine: useEnglishBridge ? 'Claude 3.5 Sonnet AI · 영어 경유' : 'Claude 3.5 Sonnet AI (보조)' };
+    } catch(e) { console.warn('Claude Error, fallbacking...', e); }
+  }
+
+  // 3순위: Google Translate Free Web API
+  try {
+    const englishText = useEnglishBridge ? await translateWithFreeApi(text, 'en') : text;
+    const resText = langCode === 'en'
+      ? await translateWithFreeApi(text, 'en')
+      : await translateWithFreeApi(englishText, langCode);
+    return { text: resText, engine: useEnglishBridge ? 'Google Translate · 영어 경유' : 'Google Translate (기본 Web)' };
+  } catch(e) {
+    throw new Error('모든 번역 엔진 연결 실패');
+  }
+}
+
+async function translateWithGemini(apiKey, text, targetLangName, toneInstruction, sourceLangName = 'Korean') {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: `You are an expert administrative translator specializing in Korean visa document verification.
+Instruction: Translate the following ${sourceLangName} text into ${targetLangName}.
+Requirements:
+1. Preserve technical visa terms like HiKorea, RC, D-2, D-4 without wrong literal translation.
+2. ${toneInstruction}
+3. Output ONLY plain text. Do not output HTML, XML, Markdown, or entities such as &amp;#39;.
+4. Preserve apostrophes and punctuation naturally in ${targetLangName}.
+
+${text}`
+        }]
+      }]
+    })
+  });
+  if(!response.ok) throw new Error(`Gemini HTTP ${response.status}`);
+  const data = await response.json();
+  if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+    return decodeHtmlEntities(data.candidates[0].content.parts[0].text).trim();
+  }
+  throw new Error('Gemini API Error');
+}
+
+async function translateWithGeminiPipeline(apiKey, text, targetLangName, toneInstruction, useEnglishBridge) {
+  if(!useEnglishBridge) return translateWithGemini(apiKey, text, targetLangName, toneInstruction);
+  const englishText = await translateWithGemini(apiKey, text, 'English', toneInstruction, 'Korean');
+  return translateWithGemini(apiKey, englishText, targetLangName, toneInstruction, 'English');
+}
+
+async function translateWithClaude(apiKey, text, targetLangName, toneInstruction, sourceLangName = 'Korean') {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'dangerously-allow-browser': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: `Translate the following ${sourceLangName} text into ${targetLangName}. Tone requirement: ${toneInstruction}. Output ONLY plain text without HTML entities or Markdown:\n\n${text}`
+      }]
+    })
+  });
+  if(!response.ok) throw new Error(`Claude HTTP ${response.status}`);
+  const data = await response.json();
+  if (data.content && data.content[0] && data.content[0].text) {
+    return decodeHtmlEntities(data.content[0].text).trim();
+  }
+  throw new Error('Claude API Error');
+}
+
+async function translateWithClaudePipeline(apiKey, text, targetLangName, toneInstruction, useEnglishBridge) {
+  if(!useEnglishBridge) return translateWithClaude(apiKey, text, targetLangName, toneInstruction);
+  const englishText = await translateWithClaude(apiKey, text, 'English', toneInstruction, 'Korean');
+  return translateWithClaude(apiKey, englishText, targetLangName, toneInstruction, 'English');
+}
+
+async function translateWithFreeApi(text, targetLangCode) {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ko|${targetLangCode}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`무료 번역 API HTTP ${res.status}`);
+  const json = await res.json();
+  if(json.responseData && json.responseData.translatedText) {
+    return decodeHtmlEntities(json.responseData.translatedText).trim();
+  }
+  throw new Error('무료 API 오류');
+}
+
+function copyFromButton(btnEl) {
+  copyTextOnly(btnEl?.dataset.copyText || '', btnEl);
+}
+
+function copyCombinedFromButton(btnEl) {
+  copyFullCombined(btnEl?.dataset.copyTranslation || '', btnEl?.dataset.copyOriginal || '', btnEl);
+}
+
+function copyTextOnly(text, btnEl) {
+  const done = () => {
+    if(btnEl) {
+      const origText = btnEl.textContent;
+      btnEl.textContent = '✓ 복사완료';
+      btnEl.classList.add('copied');
+      setTimeout(() => {
+        btnEl.textContent = origText;
+        btnEl.classList.remove('copied');
+      }, 1500);
+    }
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+
+function copyFullCombined(transText, origText, btnEl) {
+  const combined = `${transText}\n${origText}`;
+  copyTextOnly(combined, btnEl);
+}
+
+function fallbackCopy(text, cb){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  let copied = false;
+  try{ copied = document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  if(copied) cb();
+}
+
+function renderAll(){
+  renderRail();
+  bindSettingsPanel();
+  const inner = document.getElementById('mainInner');
+
+  if(state.catId === 'custom-translator') {
+    inner.innerHTML = renderCustomTranslatorView();
+    return;
+  }
+
+  let items = [];
+  let cat = null;
+
+  if(state.catId === 'favorites') {
+    const all = getAllFlatItems();
+    items = all.filter(e => favorites.includes(e.key));
+    cat = { name: '⭐ 즐겨찾기 한 보완 멘트', desc: '자주 사용하는 멘트 모음입니다.' };
+  } else if(state.searchQuery) {
+    const all = getAllFlatItems();
+    const q = normalizeSearchText(state.searchQuery);
+    items = all.filter(e => [e.item.condition, e.item.kr, e.group, e.catName]
+      .some(value => normalizeSearchText(value).includes(q)));
+    cat = { name: `🔍 검색 결과: "${state.searchQuery}"`, desc: `총 ${items.length}개의 보완 멘트가 검색되었습니다.` };
+  } else {
+    cat = DATA.categories.find(c => c.id === state.catId);
+    items = flatItems(cat);
+  }
+
+  inner.innerHTML =
+    '<div class="cat-header"><div><h1>'+escapeHtml(cat.name)+'</h1><p>'+escapeHtml(cat.desc)+'</p></div>'+
+    '<div class="cat-count">'+items.length+' MENTS</div></div>'+
+    '<div class="work">'+
+      '<div class="col-main">'+
+        renderItemList(items, cat)+
+      '</div>'+
+      '<div class="right-sticky-container">'+
+        renderStickyDetailCard(cat, items)+
+        renderStickyResultCard(cat, items)+
+        renderReferencePanel(cat)+
+      '</div>'+
+    '</div>';
+
+  inner.querySelectorAll('.item-row').forEach(btn => {
+    btn.addEventListener('click', () => {
+      saveCurrentInputs();
+      state.itemKey = btn.getAttribute('data-key');
+      const itemCat = btn.getAttribute('data-cat');
+      if(itemCat && state.catId !== 'favorites' && !state.searchQuery) state.catId = itemCat;
+      state.lang = null;
+      state.isItemCustomActive = false;
+      state.itemCustomResult = '';
+      renderAll();
+    });
+  });
+}
+
+renderAll();
+</script>
+</body>
+</html>
