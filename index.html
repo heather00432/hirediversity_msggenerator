@@ -960,7 +960,7 @@ function renderStickyDetailCard(cat, items) {
       '</div>';
   }
 
-  if(it.note){
+  if(it.note && !it.condition.includes('거주 제공 확인서 날짜')){
     html += '<div class="detail-note">ℹ️ '+escapeHtml(it.note)+'</div>';
   }
 
