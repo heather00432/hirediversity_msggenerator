@@ -612,6 +612,9 @@ function getItemTranslation(item, langCode) {
     ];
     let dateIndex = 0;
     text = text.replace(/\[[^\]]+\/[^\]]+\]/g, () => dates[dateIndex++] || '[월/일]');
+    if(langCode === 'mn') {
+      text = text.replace('Сар өдрөөс Сар өдрөөр', dates[0] + '-оос ' + dates[1] + ' болгож');
+    }
   }
   return sanitizeTranslation(text, langCode);
 }
