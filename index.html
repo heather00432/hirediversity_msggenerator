@@ -621,6 +621,30 @@ function formatEnteredDate(month, day) {
   return (month || '[월]') + '/' + (day || '[일]');
 }
 
+function updateDateInput(input) {
+  const field = input.dataset.dateField;
+  state[field] = input.value.replace(/[^0-9]/g, '').slice(0, 2);
+  document.querySelectorAll('[data-date-field="'+field+'"]').forEach(element => {
+    if(element !== input) element.value = state[field];
+  });
+
+  const entry = getAllFlatItems().find(item => item.key === state.itemKey);
+  if(!entry) return;
+  const koreanText = getItemKoreanText(entry.item);
+  document.querySelectorAll('.detail-head .kr-text').forEach(element => {
+    element.textContent = koreanText;
+  });
+  document.querySelectorAll('.result-box .original').forEach(element => {
+    element.textContent = koreanText;
+  });
+  if(state.lang && !state.isItemCustomActive) {
+    const translated = getItemTranslation(entry.item, state.lang);
+    document.querySelectorAll('.result-box .translated').forEach(element => {
+      element.textContent = translated;
+    });
+  }
+}
+
 const LANG_MAP = {
   'fra': { code: 'fr', name: '프랑스어' }, 'fr': { code: 'fr', name: '프랑스어' }, 'french': { code: 'fr', name: '프랑스어' }, '프랑스어': { code: 'fr', name: '프랑스어' }, '프랑스': { code: 'fr', name: '프랑스어' },
   'deu': { code: 'de', name: '독일어' }, 'ger': { code: 'de', name: '독일어' }, 'de': { code: 'de', name: '독일어' }, 'german': { code: 'de', name: '독일어' }, '독일어': { code: 'de', name: '독일어' }, '독일': { code: 'de', name: '독일어' },
@@ -855,7 +879,8 @@ function saveCurrentInputs() {
   if(toneChk) state.isFirmTone = toneChk.checked;
 
   ['dateCurrentMonth', 'dateCurrentDay', 'dateCorrectedMonth', 'dateCorrectedDay'].forEach(id => {
-    const input = document.getElementById(id);
+    const input = [...document.querySelectorAll('[data-date-field="'+id+'"]')]
+      .find(element => element.offsetWidth || element.offsetHeight) || document.querySelector('[data-date-field="'+id+'"]');
     if(input) state[id] = input.value.replace(/[^0-9]/g, '').slice(0, 2);
   });
 }
@@ -950,12 +975,12 @@ function renderStickyDetailCard(cat, items) {
   if(it.condition.includes('거주 제공 확인서 날짜')) {
     html += '<div class="date-input-panel">'+
       '<div class="date-input-group"><span>현재 날짜</span><div class="date-input-fields">'+
-        '<input id="dateCurrentMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCurrentMonth)+'" aria-label="현재 날짜 월">'+
-        '<input id="dateCurrentDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCurrentDay)+'" aria-label="현재 날짜 일">'+
+        '<input id="dateCurrentMonth" data-date-field="dateCurrentMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCurrentMonth)+'" aria-label="현재 날짜 월" oninput="updateDateInput(this)">'+
+        '<input id="dateCurrentDay" data-date-field="dateCurrentDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCurrentDay)+'" aria-label="현재 날짜 일" oninput="updateDateInput(this)">'+
       '</div></div>'+ 
       '<div class="date-input-group"><span>수정할 날짜</span><div class="date-input-fields">'+
-        '<input id="dateCorrectedMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCorrectedMonth)+'" aria-label="수정할 날짜 월">'+
-        '<input id="dateCorrectedDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCorrectedDay)+'" aria-label="수정할 날짜 일">'+
+        '<input id="dateCorrectedMonth" data-date-field="dateCorrectedMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCorrectedMonth)+'" aria-label="수정할 날짜 월" oninput="updateDateInput(this)">'+
+        '<input id="dateCorrectedDay" data-date-field="dateCorrectedDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCorrectedDay)+'" aria-label="수정할 날짜 일" oninput="updateDateInput(this)">'+
       '</div></div>'+ 
       '</div>';
   }
