@@ -293,6 +293,10 @@
   .date-input-panel { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-lg); background: var(--color-gray-50); border-bottom: 1px solid var(--color-gray-200); }
   .date-input-panel label { color: var(--color-gray-700); font-size: var(--font-size-2xs); font-weight: var(--font-weight-semibold); }
   .date-input-panel input { margin-top: 4px; width: 100%; }
+  .date-input-group { display: grid; gap: 4px; }
+  .date-input-group > span { color: var(--color-gray-700); font-size: var(--font-size-2xs); font-weight: var(--font-weight-semibold); }
+  .date-input-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .date-input-fields input { margin-top: 0; text-align: center; }
 
   .lang-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: var(--spacing-md) var(--spacing-lg); background-color: var(--color-white); }
   .lang-chip { font-family: inherit; font-size: var(--font-size-2xs); font-weight: var(--font-weight-medium); background-color: var(--color-gray-100); border: 1px solid var(--color-gray-200); color: var(--color-gray-700); padding: 5px 10px; border-radius: var(--radius-full); cursor: pointer; transition: all 0.15s ease; }
@@ -587,11 +591,13 @@ function sanitizeTranslation(text, langCode) {
 
 function getItemKoreanText(item) {
   let text = item.kr || '';
-  if(item.condition === '[거주제공확인서 날짜]') {
+  if(item.condition.includes('거주 제공 확인서 날짜')) {
     let dateIndex = 0;
     text = text.replace(/\[월\/일\]/g, () => {
       dateIndex += 1;
-      return dateIndex === 1 ? (state.dateCurrent || '[월/일]') : (state.dateCorrected || '[월/일]');
+      return dateIndex === 1
+        ? formatEnteredDate(state.dateCurrentMonth, state.dateCurrentDay)
+        : formatEnteredDate(state.dateCorrectedMonth, state.dateCorrectedDay);
     });
   }
   return text;
@@ -599,16 +605,20 @@ function getItemKoreanText(item) {
 
 function getItemTranslation(item, langCode) {
   let text = item.t && item.t[langCode] ? item.t[langCode] : '';
-  if(item.condition === '[거주제공확인서 날짜]') {
-    const currentDate = state.dateCurrent || '[월/일]';
-    const correctedDate = state.dateCorrected || '[월/일]';
+  if(item.condition.includes('거주 제공 확인서 날짜')) {
+    const dates = [
+      formatEnteredDate(state.dateCurrentMonth, state.dateCurrentDay),
+      formatEnteredDate(state.dateCorrectedMonth, state.dateCorrectedDay)
+    ];
     let dateIndex = 0;
-    text = text.replace(/\[월\/일\]/g, () => {
-      dateIndex += 1;
-      return dateIndex === 1 ? currentDate : correctedDate;
-    });
+    text = text.replace(/\[[^\]]+\/[^\]]+\]/g, () => dates[dateIndex++] || '[월/일]');
   }
   return sanitizeTranslation(text, langCode);
+}
+
+function formatEnteredDate(month, day) {
+  if(!month && !day) return '[월/일]';
+  return (month || '[월]') + '/' + (day || '[일]');
 }
 
 const LANG_MAP = {
@@ -707,8 +717,10 @@ let state = {
   itemUsedEngineName: '',
   isItemTranslating: false,
   itemTranslationRequestId: 0,
-  dateCurrent: '',
-  dateCorrected: '',
+  dateCurrentMonth: '',
+  dateCurrentDay: '',
+  dateCorrectedMonth: '',
+  dateCorrectedDay: '',
   collapsedGroups: {}
 };
 
@@ -842,10 +854,10 @@ function saveCurrentInputs() {
   const toneChk = document.getElementById('firmToneChk');
   if(toneChk) state.isFirmTone = toneChk.checked;
 
-  const dateCurrentEl = document.getElementById('dateCurrentInput');
-  if(dateCurrentEl) state.dateCurrent = dateCurrentEl.value.trim();
-  const dateCorrectedEl = document.getElementById('dateCorrectedInput');
-  if(dateCorrectedEl) state.dateCorrected = dateCorrectedEl.value.trim();
+  ['dateCurrentMonth', 'dateCurrentDay', 'dateCorrectedMonth', 'dateCorrectedDay'].forEach(id => {
+    const input = document.getElementById(id);
+    if(input) state[id] = input.value.replace(/[^0-9]/g, '').slice(0, 2);
+  });
 }
 
 function escapeHtml(s){
@@ -931,10 +943,16 @@ function renderStickyDetailCard(cat, items) {
   html += '<div class="detail-head"><div class="cond-tag">'+escapeHtml(it.condition)+'</div>'+
     '<div class="kr-text">'+escapeHtml(koreanText)+'</div></div>';
 
-  if(it.condition === '[거주제공확인서 날짜]') {
+  if(it.condition.includes('거주 제공 확인서 날짜')) {
     html += '<div class="date-input-panel">'+
-      '<label>현재 날짜 <input id="dateCurrentInput" class="form-control" type="text" placeholder="월/일" value="'+escapeHtml(state.dateCurrent)+'"></label>'+ 
-      '<label>수정할 날짜 <input id="dateCorrectedInput" class="form-control" type="text" placeholder="월/일" value="'+escapeHtml(state.dateCorrected)+'"></label>'+ 
+      '<div class="date-input-group"><span>현재 날짜</span><div class="date-input-fields">'+
+        '<input id="dateCurrentMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCurrentMonth)+'" aria-label="현재 날짜 월">'+
+        '<input id="dateCurrentDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCurrentDay)+'" aria-label="현재 날짜 일">'+
+      '</div></div>'+ 
+      '<div class="date-input-group"><span>수정할 날짜</span><div class="date-input-fields">'+
+        '<input id="dateCorrectedMonth" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="월" value="'+escapeHtml(state.dateCorrectedMonth)+'" aria-label="수정할 날짜 월">'+
+        '<input id="dateCorrectedDay" class="form-control" type="text" inputmode="numeric" maxlength="2" placeholder="일" value="'+escapeHtml(state.dateCorrectedDay)+'" aria-label="수정할 날짜 일">'+
+      '</div></div>'+ 
       '</div>';
   }
 
