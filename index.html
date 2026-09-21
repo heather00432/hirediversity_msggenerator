@@ -916,8 +916,8 @@ function renderReferencePanel(cat){
   const collapsedClass = state.refCollapsed ? ' collapsed' : '';
   const blocks = cat.reference.map(ref => renderRefBlock(ref)).join('');
   
-  return '<aside class="ref-panel'+collapsedClass+'" id="refPanelArea">'+
-    '<div class="ref-panel-head" onclick="toggleRefPanel()">'+
+  return '<aside class="ref-panel'+collapsedClass+'">'+
+    '<div class="ref-panel-head" role="button" tabindex="0" aria-expanded="'+(!state.refCollapsed)+'" onclick="toggleRefPanel(event)" onkeydown="if(event.key === \'Enter\' || event.key === \' \'){ event.preventDefault(); toggleRefPanel(event); }">'+
       '<div class="ref-panel-head-title"><span class="pin">📌</span><h3>참고 기준 및 가이드</h3><span class="ref-toggle-badge">펼치기/접기</span></div>'+
       '<span class="ref-toggle-icon">▼</span>'+
     '</div>'+
@@ -925,10 +925,14 @@ function renderReferencePanel(cat){
   '</aside>';
 }
 
-function toggleRefPanel() {
+function toggleRefPanel(event) {
+  if(event) event.stopPropagation();
   state.refCollapsed = !state.refCollapsed;
-  const panel = document.getElementById('refPanelArea');
-  if(panel) panel.classList.toggle('collapsed', state.refCollapsed);
+  document.querySelectorAll('.ref-panel').forEach(panel => {
+    panel.classList.toggle('collapsed', state.refCollapsed);
+    const header = panel.querySelector('.ref-panel-head');
+    if(header) header.setAttribute('aria-expanded', String(!state.refCollapsed));
+  });
 }
 
 // 1순위: 우측 상단 고정 상세 문장 카드 (내부 스크롤)
