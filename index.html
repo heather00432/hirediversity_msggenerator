@@ -718,6 +718,7 @@ function parseFlexibleLang(inputStr) {
 
 let favorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
 let customSavedMents = JSON.parse(localStorage.getItem('user_saved_ments') || '[]');
+const translationCache = new Map();
 
 let state = {
   catId: 'passport',
@@ -1361,6 +1362,9 @@ async function handleCustomTranslate() {
 
 // 3중 하이브리드 번역 엔진 (1순위 Gemini ➔ 2순위 Claude ➔ 3순위 Google Web)
 async function multiEngineTranslate(text, langCode, langName, isFirm) {
+  const cacheKey = [text, langCode, isFirm ? 'firm' : 'normal'].join('::');
+  if(translationCache.has(cacheKey)) return translationCache.get(cacheKey);
+
   const toneInstruction = isFirm 
     ? "Use a firm, authoritative, strict official policy tone (commanding / mandatory administrative style)."
     : "Use a polite, clear, and professional administrative service tone.";
@@ -1371,7 +1375,9 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
   if(state.geminiApiKey) {
     try {
       const resText = await translateWithGeminiPipeline(state.geminiApiKey, text, langName, toneInstruction, useEnglishBridge);
-      return { text: resText, engine: useEnglishBridge ? 'Google Gemini 1.5 AI · 영어 경유' : 'Google Gemini 1.5 AI (메인)' };
+      const result = { text: resText, engine: useEnglishBridge ? 'Google Gemini 1.5 AI · 영어 경유' : 'Google Gemini 1.5 AI (메인)' };
+      translationCache.set(cacheKey, result);
+      return result;
     } catch(e) { console.warn('Gemini Error, fallbacking...', e); }
   }
 
@@ -1379,15 +1385,18 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
   if(state.claudeApiKey) {
     try {
       const resText = await translateWithClaudePipeline(state.claudeApiKey, text, langName, toneInstruction, useEnglishBridge);
-      return { text: resText, engine: useEnglishBridge ? 'Claude 3.5 Sonnet AI · 영어 경유' : 'Claude 3.5 Sonnet AI (보조)' };
+      const result = { text: resText, engine: useEnglishBridge ? 'Claude 3.5 Sonnet AI · 영어 경유' : 'Claude 3.5 Sonnet AI (보조)' };
+      translationCache.set(cacheKey, result);
+      return result;
     } catch(e) { console.warn('Claude Error, fallbacking...', e); }
   }
 
-  // 3순위: Google Translate Free Web API
+  // 3순위: MyMemory 무료 API. 목표 언어로 직접 요청해 불필요한 2단계 호출을 피한다.
   try {
-    const englishText = useEnglishBridge ? await translateWithFreeApi(text, 'en') : text;
-    const resText = useEnglishBridge ? await translateWithFreeApi(englishText, langCode) : englishText;
-    return { text: resText, engine: useEnglishBridge ? 'Google Translate · 영어 경유' : 'Google Translate (기본 Web)' };
+    const resText = await translateWithFreeApi(text, langCode);
+    const result = { text: resText, engine: 'MyMemory 무료 번역 API' };
+    translationCache.set(cacheKey, result);
+    return result;
   } catch(e) {
     throw new Error('모든 번역 엔진 연결 실패');
   }
@@ -1395,7 +1404,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
 
 async function translateWithGemini(apiKey, text, targetLangName, toneInstruction, sourceLangName = 'Korean') {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1413,7 +1422,7 @@ ${text}`
         }]
       }]
     })
-  });
+  }, 12000);
   if(!response.ok) throw new Error(`Gemini HTTP ${response.status}`);
   const data = await response.json();
   if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
@@ -1429,7 +1438,7 @@ async function translateWithGeminiPipeline(apiKey, text, targetLangName, toneIns
 }
 
 async function translateWithClaude(apiKey, text, targetLangName, toneInstruction, sourceLangName = 'Korean') {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
@@ -1445,7 +1454,7 @@ async function translateWithClaude(apiKey, text, targetLangName, toneInstruction
         content: `Translate the following ${sourceLangName} text into ${targetLangName}. Tone requirement: ${toneInstruction}. Output ONLY plain text without HTML entities or Markdown:\n\n${text}`
       }]
     })
-  });
+  }, 12000);
   if(!response.ok) throw new Error(`Claude HTTP ${response.status}`);
   const data = await response.json();
   if (data.content && data.content[0] && data.content[0].text) {
@@ -1462,13 +1471,20 @@ async function translateWithClaudePipeline(apiKey, text, targetLangName, toneIns
 
 async function translateWithFreeApi(text, targetLangCode) {
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ko|${targetLangCode}`;
-  const res = await fetch(url);
+  const res = await fetchWithTimeout(url, {}, 8000);
   if(!res.ok) throw new Error(`무료 번역 API HTTP ${res.status}`);
   const json = await res.json();
   if(json.responseData && json.responseData.translatedText) {
     return decodeHtmlEntities(json.responseData.translatedText).trim();
   }
   throw new Error('무료 API 오류');
+}
+
+function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timer));
 }
 
 function copyTextOnly(text, btnEl) {
