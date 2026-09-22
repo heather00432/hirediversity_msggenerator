@@ -597,11 +597,62 @@ if(excessSemesterGroup && !excessSemesterGroup.items.some(item => item.condition
   excessSemesterGroup.items.push(monthlyStudyPlanItem);
 }
 
+const translationCorrections = {
+  '[영수증에 일정 정보가 없는 경우]': {
+    vi: 'Vui lòng viết tên học sinh lên hóa đơn đã nộp và gửi lại.'
+  },
+  '[거주·숙소 제공일이 비어 있는 경우]': {
+    ne: 'बासस्थान प्रदान पुष्टि पत्रमा आवास प्रदान गरिएको मिति खाली छ। कृपया कागजात लेखिएको मितिसँग समान मिति लेख्नुहोला।',
+    uz: "Turar joy taqdim etilganligini tasdiqlovchi hujjatda turar joy berilgan sana bo'sh qolgan. Iltimos, uni hujjat tuzilgan sana bilan bir xil sana deb yozing."
+  },
+  '[계약 주소와 기재 주소가 다른 경우]': {
+    uz: "Hozirda HiKoreada ro'yxatdan o'tgan yashash joyingiz va yashash joyi to'g'risidagi hujjatdagi manzilingiz bir-biriga mos kelmayapti. Iltimos, mahalla idorasida yoki HiKorea orqali yashash joyini o'zgartirish haqida xabar bering, so'ngra chet ellik guvohnomasining orqa tomonini taqdim eting. Yoki ruxsat olganingizdan keyin ruxsatnomani taqdim eting."
+  },
+  '[개강 전에 발급받은 서류]': {
+    uz: "Iltimos, darslar boshlanishidan oldin berilgan emas, balki darslar boshlangan sanadan keyin berilgan o'qish joyidan ma'lumotnomani taqdim eting."
+  },
+  '[연세대학교 전용 - 재학증명서 제출 사항]': {
+    en: "Yonsei University's 'CERTIFICATE OF ENROLLMENT' is considered a student record certificate. Please submit the 'CERTIFICATE OF ATTENDANCE', which is the enrollment certificate. Please submit it in English.",
+    vi: "'CERTIFICATE OF ENROLLMENT' của Đại học Yonsei là giấy chứng nhận hồ sơ sinh viên. Vui lòng nộp 'CERTIFICATE OF ATTENDANCE', là giấy chứng nhận đang học. Vui lòng nộp bằng tiếng Anh.",
+    ne: "योनसे विश्वविद्यालयको 'CERTIFICATE OF ENROLLMENT' विद्यार्थी अभिलेख प्रमाणपत्र हो। कृपया अध्ययनरत प्रमाणपत्र 'CERTIFICATE OF ATTENDANCE' पेश गर्नुहोस्। कृपया अंग्रेजी भाषामा पेश गर्नुहोस्।",
+    uz: "Yonsei universitetining 'CERTIFICATE OF ENROLLMENT' hujjati talabalar qaydi to'g'risidagi ma'lumotnoma hisoblanadi. Iltimos, o'qish to'g'risidagi ma'lumotnoma bo'lgan 'CERTIFICATE OF ATTENDANCE' hujjatini topshiring. Iltimos, uni ingliz tilida topshiring."
+  },
+  '[스캔 상태가 불분명한 경우]': {
+    vi: 'Loại giấy tờ bạn nộp đã đúng, tuy nhiên bản quét (scan) không rõ ràng nên rất khó kiểm tra. Vui lòng quét (scan) lại rõ ràng giấy tờ đó và nộp lại.'
+  },
+  '[자필 사유서 작성 안내]': {
+    vi: 'Vui lòng viết bản giải trình bằng tay chi tiết và thành thật. Không có biểu mẫu quy định, nhưng bắt buộc phải có tên học sinh, chữ ký tay và ngày viết.'
+  }
+};
+
+DATA.categories.forEach(category => {
+  (category.groups || [{ items: category.items || [] }]).forEach(group => {
+    group.items.forEach(item => {
+      if(item.condition.includes('33M2 호스트 관련')) {
+        item.note = 'OOO 부분에 거주제공자의 이름을 채워 주세요.';
+        item.noteT = {
+          en: "Please fill in the residence provider's name in the OOO section.",
+          zh: '请在 OOO 部分填写居住提供者的姓名。',
+          ja: 'OOOの部分に居住提供者の名前を記入してください。',
+          vi: 'Vui lòng điền tên người cung cấp chỗ ở vào phần OOO.',
+          ne: 'कृपया OOO भागमा आवास उपलब्ध गराउने व्यक्तिको नाम भर्नुहोस्।',
+          uz: "Iltimos, OOO qismiga yashash joyini taqdim etuvchining ismini yozing.",
+          mn: 'OOO хэсэгт байр олгож буй хүний нэрийг бичнэ үү.'
+        };
+      }
+      const corrections = translationCorrections[item.condition];
+      if(corrections) Object.assign(item.t, corrections);
+    });
+  });
+});
+
 function sanitizeTranslation(text, langCode) {
   let result = String(text || '');
   result = result.replace(/\bAlien\s+(?:Registration|Registeration)(?:\s+Card)?\b/gi, 'Residence Card');
   result = result.replace(/\bAlien\s+Card\b/gi, 'Residence Card');
   if(langCode === 'zh') result = result.replace(/이상의/g, '以上的');
+  if(langCode === 'vi') result = result.replace(/\s+및\s+/g, ' và ');
+  result = result.replace(/\([^()]*[가-힣][^()]*\)/g, '');
   result = result.replace(/([가-힣A-Za-z0-9])\s*\(\s*([가-힣A-Za-z0-9]+)\s*\)/g, (match, word, repeated) => {
     return word === repeated ? word : match;
   });
@@ -1011,7 +1062,10 @@ function renderStickyDetailCard(cat, items) {
   }
 
   if(it.note && !it.condition.includes('거주 제공 확인서 날짜')){
-    html += '<div class="detail-note">ℹ️ '+escapeHtml(it.note)+'</div>';
+    const translatedNote = !state.isItemCustomActive && state.lang && it.noteT?.[state.lang]
+      ? '<br>'+escapeHtml(it.noteT[state.lang])
+      : '';
+    html += '<div class="detail-note">ℹ️ '+escapeHtml(it.note)+translatedNote+'</div>';
   }
 
   html += '<div class="lang-bar">';
@@ -1455,6 +1509,7 @@ Requirements:
 2. ${toneInstruction}
 3. Output ONLY plain text. Do not output HTML, XML, Markdown, or entities such as &amp;#39;.
 4. Preserve apostrophes and punctuation naturally in ${targetLangName}.
+5. Do not leave Korean words or Korean explanations in the translation. Translate all translatable Korean text; for personal names or placeholders that cannot be translated, keep the original name or use an English form.
 
 ${text}`
         }]
@@ -1489,7 +1544,7 @@ async function translateWithClaude(apiKey, text, targetLangName, toneInstruction
       max_tokens: 1000,
       messages: [{
         role: 'user',
-        content: `Translate the following ${sourceLangName} text into ${targetLangName}. Tone requirement: ${toneInstruction}. Output ONLY plain text without HTML entities or Markdown:\n\n${text}`
+        content: `Translate the following ${sourceLangName} text into ${targetLangName}. Tone requirement: ${toneInstruction}. Output ONLY plain text without HTML entities or Markdown. Do not leave Korean words or Korean explanations in the translation. Translate all translatable Korean text; for personal names or placeholders that cannot be translated, keep the original name or use an English form:\n\n${text}`
       }]
     })
   }, 12000);
