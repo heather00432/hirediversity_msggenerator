@@ -896,7 +896,8 @@ function saveCurrentInputs() {
   const customLangEl = document.getElementById('inputFlexibleLang');
   if(customLangEl) state.customLangInput = customLangEl.value;
 
-  const itemLangEl = document.getElementById('itemCustomLangInputEl');
+  const itemLangEl = [...document.querySelectorAll('[data-item-lang-input]')]
+    .find(element => element.offsetWidth || element.offsetHeight) || document.querySelector('[data-item-lang-input]');
   if(itemLangEl) state.itemCustomLangInput = itemLangEl.value;
 
   const toneChk = document.getElementById('firmToneChk');
@@ -1026,9 +1027,9 @@ function renderStickyDetailCard(cat, items) {
   if(state.isItemCustomActive) {
     html += `
       <div class="custom-lang-bar-input">
-        <input type="text" id="itemCustomLangInputEl" class="form-control" style="max-width:260px;" placeholder="예: 프랑스어, fra, 태국어, th 등" value="${escapeHtml(state.itemCustomLangInput)}">
-        <button class="translate-action-btn" style="width:auto; padding:6px 14px; font-size:12px;" onclick="handleItemCustomTranslate()" ${state.isItemTranslating?'disabled':''}>
-          ${state.isItemTranslating ? '⏳ 번역중...' : 'AI 번역하기'}
+        <input type="text" id="itemCustomLangInputEl" data-item-lang-input class="form-control" style="max-width:260px;" placeholder="예: 프랑스어, fra, 태국어, th 등" value="${escapeHtml(state.itemCustomLangInput)}">
+        <button class="translate-action-btn" style="width:auto; padding:6px 14px; font-size:12px;" onclick="handleItemCustomTranslate(this)" ${state.isItemTranslating?'disabled':''}>
+          ${state.isItemTranslating ? '⏳ 번역중...' : '번역하기'}
         </button>
       </div>
     `;
@@ -1174,7 +1175,11 @@ function toggleItemCustomLang(val) {
   renderAll();
 }
 
-async function handleItemCustomTranslate() {
+async function handleItemCustomTranslate(button) {
+  const input = button?.closest('.custom-lang-bar-input')?.querySelector('[data-item-lang-input]')
+    || [...document.querySelectorAll('[data-item-lang-input]')].find(element => element.offsetWidth || element.offsetHeight)
+    || document.querySelector('[data-item-lang-input]');
+  if(input) state.itemCustomLangInput = input.value.trim();
   saveCurrentInputs();
   const allItems = getAllFlatItems();
   const entry = allItems.find(e => e.key === state.itemKey);
