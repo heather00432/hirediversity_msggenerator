@@ -469,6 +469,10 @@
         <input id="railGeminiApiKey" type="password" class="form-control" placeholder="AIzaSy..." value="">
         <label for="railClaudeApiKey">Claude API Key</label>
         <input id="railClaudeApiKey" type="password" class="form-control" placeholder="sk-ant-api..." value="">
+        <label for="railLibreTranslateUrl">LibreTranslate 서버 주소</label>
+        <input id="railLibreTranslateUrl" type="url" class="form-control" placeholder="http://localhost:5000/translate" value="">
+        <label for="railLibreTranslateApiKey">LibreTranslate API Key (선택)</label>
+        <input id="railLibreTranslateApiKey" type="password" class="form-control" placeholder="API key가 필요한 서버만 입력" value="">
         <span class="rail-settings-note">입력한 키는 현재 브라우저 세션에서만 사용됩니다.</span>
       </div>
     </details>
@@ -737,6 +741,8 @@ let state = {
   customResult: '',
   usedEngineName: '',
   isTranslating: false,
+  libreTranslateUrl: sessionStorage.getItem('libre_translate_url') || 'http://localhost:5000/translate',
+  libreTranslateApiKey: sessionStorage.getItem('libre_translate_api_key') || '',
 
   // 일반 카테고리 맞춤 언어 번역 상태
   itemCustomLangInput: '',
@@ -828,14 +834,20 @@ function bindSettingsPanel() {
   const settingsPanel = document.getElementById('settingsPanel');
   const geminiInput = document.getElementById('railGeminiApiKey');
   const claudeInput = document.getElementById('railClaudeApiKey');
-  if(!settingsPanel || !geminiInput || !claudeInput) return;
+  const libreUrlInput = document.getElementById('railLibreTranslateUrl');
+  const libreApiKeyInput = document.getElementById('railLibreTranslateApiKey');
+  if(!settingsPanel || !geminiInput || !claudeInput || !libreUrlInput || !libreApiKeyInput) return;
 
   geminiInput.value = state.geminiApiKey;
   claudeInput.value = state.claudeApiKey;
+  libreUrlInput.value = state.libreTranslateUrl;
+  libreApiKeyInput.value = state.libreTranslateApiKey;
   if(settingsPanel.dataset.bound === 'true') return;
 
   geminiInput.addEventListener('change', event => saveApiKey('gemini', event.target.value));
   claudeInput.addEventListener('change', event => saveApiKey('claude', event.target.value));
+  libreUrlInput.addEventListener('change', event => saveLibreTranslateSetting('url', event.target.value));
+  libreApiKeyInput.addEventListener('change', event => saveLibreTranslateSetting('apiKey', event.target.value));
   settingsPanel.dataset.bound = 'true';
 }
 
@@ -1332,6 +1344,16 @@ function saveApiKey(type, val) {
   }
 }
 
+function saveLibreTranslateSetting(type, val) {
+  if(type === 'url') {
+    state.libreTranslateUrl = val.trim() || 'http://localhost:5000/translate';
+    sessionStorage.setItem('libre_translate_url', state.libreTranslateUrl);
+  } else {
+    state.libreTranslateApiKey = val.trim();
+    sessionStorage.setItem('libre_translate_api_key', state.libreTranslateApiKey);
+  }
+}
+
 async function handleCustomTranslate() {
   saveCurrentInputs();
 
@@ -1370,8 +1392,19 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     : "Use a polite, clear, and professional administrative service tone.";
 
   const useEnglishBridge = langCode !== 'en';
+  const fallbackErrors = [];
 
-  // 1순위: Gemini AI Engine (메인)
+  // 1순위: LibreTranslate 로컬/지정 서버
+  try {
+    const resText = await translateWithLibreTranslate(text, langCode);
+    const result = { text: resText, engine: 'LibreTranslate' };
+    translationCache.set(cacheKey, result);
+    return result;
+  } catch(e) {
+    fallbackErrors.push('LibreTranslate: ' + getTranslationErrorMessage(e));
+  }
+
+  // 2순위: Gemini AI Engine (메인)
   if(state.geminiApiKey) {
     try {
       const resText = await translateWithGeminiPipeline(state.geminiApiKey, text, langName, toneInstruction, useEnglishBridge);
@@ -1381,7 +1414,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     } catch(e) { console.warn('Gemini Error, fallbacking...', e); }
   }
 
-  // 2순위: Claude AI Engine (보조)
+  // 3순위: Claude AI Engine (보조)
   if(state.claudeApiKey) {
     try {
       const resText = await translateWithClaudePipeline(state.claudeApiKey, text, langName, toneInstruction, useEnglishBridge);
@@ -1391,9 +1424,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     } catch(e) { console.warn('Claude Error, fallbacking...', e); }
   }
 
-  const fallbackErrors = [];
-
-  // 3순위: MyMemory 무료 API. 목표 언어로 직접 요청해 불필요한 2단계 호출을 피한다.
+  // 4순위: MyMemory 무료 API. 목표 언어로 직접 요청해 불필요한 2단계 호출을 피한다.
   try {
     const resText = await translateWithFreeApi(text, langCode);
     const result = { text: resText, engine: 'MyMemory 무료 번역 API' };
@@ -1403,7 +1434,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     fallbackErrors.push('MyMemory: ' + getTranslationErrorMessage(e));
   }
 
-  // 4순위: API 키가 필요 없는 Google Web endpoint fallback.
+  // 5순위: API 키가 필요 없는 Google Web endpoint fallback.
   try {
     const resText = await translateWithGoogleWebApi(text, langCode);
     const result = { text: resText, engine: 'Google Translate Web fallback' };
@@ -1491,6 +1522,27 @@ async function translateWithFreeApi(text, targetLangCode) {
     return decodeHtmlEntities(json.responseData.translatedText).trim();
   }
   throw new Error('무료 API 오류');
+}
+
+async function translateWithLibreTranslate(text, targetLangCode) {
+  const endpoint = state.libreTranslateUrl.trim() || 'http://localhost:5000/translate';
+  const body = {
+    q: text,
+    source: 'ko',
+    target: targetLangCode,
+    format: 'text'
+  };
+  if(state.libreTranslateApiKey) body.api_key = state.libreTranslateApiKey;
+
+  const response = await fetchWithTimeout(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }, 5000);
+  if(!response.ok) throw new Error(`LibreTranslate HTTP ${response.status}`);
+  const data = await response.json();
+  if(data && data.translatedText) return decodeHtmlEntities(data.translatedText).trim();
+  throw new Error(data?.error || 'LibreTranslate 결과 없음');
 }
 
 async function translateWithGoogleWebApi(text, targetLangCode) {
