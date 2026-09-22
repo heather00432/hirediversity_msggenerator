@@ -469,10 +469,6 @@
         <input id="railGeminiApiKey" type="password" class="form-control" placeholder="AIzaSy..." value="">
         <label for="railClaudeApiKey">Claude API Key</label>
         <input id="railClaudeApiKey" type="password" class="form-control" placeholder="sk-ant-api..." value="">
-        <label for="railLibreTranslateUrl">LibreTranslate 서버 주소</label>
-        <input id="railLibreTranslateUrl" type="url" class="form-control" placeholder="http://localhost:5000/translate" value="">
-        <label for="railLibreTranslateApiKey">LibreTranslate API Key (선택)</label>
-        <input id="railLibreTranslateApiKey" type="password" class="form-control" placeholder="API key가 필요한 서버만 입력" value="">
         <span class="rail-settings-note">입력한 키는 현재 브라우저 세션에서만 사용됩니다.</span>
       </div>
     </details>
@@ -580,6 +576,26 @@ function applyKoreanProofreading(data) {
 }
 
 applyKoreanProofreading(DATA);
+
+const monthlyStudyPlanItem = {
+  condition: '[단순 시험 응시 사실을 나열한 경우]',
+  kr: "단순 시험 응시 사실을 나열한 경우, 구체적인 학습 계획이라고 보기 어렵습니다. 시험 준비를 위해 월별로 학습할 구체적인 계획을 포함시켜 '월별 학습 계획'을 작성해 주세요.",
+  t: {
+    en: 'Simply listing exam dates or attendance cannot be considered a concrete study plan. Please write a "Monthly Study Plan" that includes specific goals and actions you will take each month to prepare for the exam.',
+    zh: '仅仅列出参加考试的事实不能算作具体的学习计划。请制定一份包含每月具体备考计划的“按月学习计划”。',
+    ja: '単に試験を受験したという事実を列挙するだけでは、具体的な学習計画とは言えません。試験対策のために月別の具体的な学習計画を含めて「月別学習計画」を作成してください。',
+    vi: 'Việc chỉ liệt kê thực tế đã tham gia kỳ thi không thể coi là một kế hoạch học tập cụ thể. Vui lòng lập "Kế hoạch học tập theo tháng" bao gồm các kế hoạch cụ thể cho từng tháng để chuẩn bị cho kỳ thi.',
+    ne: "केवल परीक्षा दिएको तथ्य मात्र सूचीबद्ध गर्नुलाई ठोस अध्ययन योजना मान्न सकिँदैन। परीक्षाको तयारीका लागि महिनापिच्छे अध्ययन गर्ने विशिष्ट योजना समावेश गरी 'मासिक अध्ययन योजना' तयार पार्नुहोस्।",
+    uz: "Shunchaki imtihonda qatnashganlik faktini keltirish aniq o'quv rejasi deb hisoblanmaydi. Imtihonga tayyorgarlik ko'rish uchun har oyda amalga oshiriladigan aniq rejani o'z ichiga olgan 'Oylik o'quv rejasi'ni tuzib bering.",
+    mn: 'Зөвхөн шалгалт өгсөн тухайгаа жагсаан бичих нь тодорхой суралцах төлөвлөгөө болж чадахгүй. Шалгалтад бэлтгэхийн тулд сар бүр хичээллэх тодорхой төлөвлөгөөг тусгасан "Сарын суралцах төлөвлөгөө"-г боловсруулж бичнэ үү.'
+  }
+};
+
+const certificateCategory = DATA.categories.find(category => category.id === 'certificates');
+const excessSemesterGroup = certificateCategory?.groups?.find(group => group.group === '초과학기 사유서');
+if(excessSemesterGroup && !excessSemesterGroup.items.some(item => item.condition === monthlyStudyPlanItem.condition)) {
+  excessSemesterGroup.items.push(monthlyStudyPlanItem);
+}
 
 function sanitizeTranslation(text, langCode) {
   let result = String(text || '');
@@ -741,8 +757,6 @@ let state = {
   customResult: '',
   usedEngineName: '',
   isTranslating: false,
-  libreTranslateUrl: sessionStorage.getItem('libre_translate_url') || 'http://localhost:5000/translate',
-  libreTranslateApiKey: sessionStorage.getItem('libre_translate_api_key') || '',
 
   // 일반 카테고리 맞춤 언어 번역 상태
   itemCustomLangInput: '',
@@ -834,20 +848,14 @@ function bindSettingsPanel() {
   const settingsPanel = document.getElementById('settingsPanel');
   const geminiInput = document.getElementById('railGeminiApiKey');
   const claudeInput = document.getElementById('railClaudeApiKey');
-  const libreUrlInput = document.getElementById('railLibreTranslateUrl');
-  const libreApiKeyInput = document.getElementById('railLibreTranslateApiKey');
-  if(!settingsPanel || !geminiInput || !claudeInput || !libreUrlInput || !libreApiKeyInput) return;
+  if(!settingsPanel || !geminiInput || !claudeInput) return;
 
   geminiInput.value = state.geminiApiKey;
   claudeInput.value = state.claudeApiKey;
-  libreUrlInput.value = state.libreTranslateUrl;
-  libreApiKeyInput.value = state.libreTranslateApiKey;
   if(settingsPanel.dataset.bound === 'true') return;
 
   geminiInput.addEventListener('change', event => saveApiKey('gemini', event.target.value));
   claudeInput.addEventListener('change', event => saveApiKey('claude', event.target.value));
-  libreUrlInput.addEventListener('change', event => saveLibreTranslateSetting('url', event.target.value));
-  libreApiKeyInput.addEventListener('change', event => saveLibreTranslateSetting('apiKey', event.target.value));
   settingsPanel.dataset.bound = 'true';
 }
 
@@ -1344,16 +1352,6 @@ function saveApiKey(type, val) {
   }
 }
 
-function saveLibreTranslateSetting(type, val) {
-  if(type === 'url') {
-    state.libreTranslateUrl = val.trim() || 'http://localhost:5000/translate';
-    sessionStorage.setItem('libre_translate_url', state.libreTranslateUrl);
-  } else {
-    state.libreTranslateApiKey = val.trim();
-    sessionStorage.setItem('libre_translate_api_key', state.libreTranslateApiKey);
-  }
-}
-
 async function handleCustomTranslate() {
   saveCurrentInputs();
 
@@ -1404,17 +1402,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     fallbackErrors.push('Google: ' + getTranslationErrorMessage(e));
   }
 
-  // 2순위: LibreTranslate 로컬/지정 서버
-  try {
-    const resText = await translateWithLibreTranslate(text, langCode);
-    const result = { text: resText, engine: 'LibreTranslate' };
-    translationCache.set(cacheKey, result);
-    return result;
-  } catch(e) {
-    fallbackErrors.push('LibreTranslate: ' + getTranslationErrorMessage(e));
-  }
-
-  // 3순위: Gemini AI Engine (메인)
+  // 2순위: Gemini AI Engine (메인)
   if(state.geminiApiKey) {
     try {
       const resText = await translateWithGeminiPipeline(state.geminiApiKey, text, langName, toneInstruction, useEnglishBridge);
@@ -1424,7 +1412,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     } catch(e) { console.warn('Gemini Error, fallbacking...', e); }
   }
 
-  // 4순위: Claude AI Engine (보조)
+  // 3순위: Claude AI Engine (보조)
   if(state.claudeApiKey) {
     try {
       const resText = await translateWithClaudePipeline(state.claudeApiKey, text, langName, toneInstruction, useEnglishBridge);
@@ -1434,7 +1422,7 @@ async function multiEngineTranslate(text, langCode, langName, isFirm) {
     } catch(e) { console.warn('Claude Error, fallbacking...', e); }
   }
 
-  // 5순위: MyMemory 무료 API. 목표 언어로 직접 요청해 불필요한 2단계 호출을 피한다.
+  // 4순위: MyMemory 무료 API. 목표 언어로 직접 요청해 불필요한 2단계 호출을 피한다.
   try {
     const resText = await translateWithFreeApi(text, langCode);
     const result = { text: resText, engine: 'MyMemory 무료 번역 API' };
@@ -1523,27 +1511,6 @@ async function translateWithFreeApi(text, targetLangCode) {
     return decodeHtmlEntities(json.responseData.translatedText).trim();
   }
   throw new Error('무료 API 오류');
-}
-
-async function translateWithLibreTranslate(text, targetLangCode) {
-  const endpoint = state.libreTranslateUrl.trim() || 'http://localhost:5000/translate';
-  const body = {
-    q: text,
-    source: 'ko',
-    target: targetLangCode,
-    format: 'text'
-  };
-  if(state.libreTranslateApiKey) body.api_key = state.libreTranslateApiKey;
-
-  const response = await fetchWithTimeout(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  }, 5000);
-  if(!response.ok) throw new Error(`LibreTranslate HTTP ${response.status}`);
-  const data = await response.json();
-  if(data && data.translatedText) return decodeHtmlEntities(data.translatedText).trim();
-  throw new Error(data?.error || 'LibreTranslate 결과 없음');
 }
 
 async function translateWithGoogleWebApi(text, targetLangCode) {
