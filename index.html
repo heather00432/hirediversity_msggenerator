@@ -485,6 +485,58 @@
 
 <script>
 const DATA = JSON.parse(document.getElementById('app-data').textContent);
+const PDF_TRANSLATION_OVERRIDES = {
+  '[공통]': {
+    en: 'Please submit the entire document so that the top section is not cut off.'
+  },
+  '[여권 유효기간이 3개월보다 미만일 경우] - 재발급까지 촉박한 경우': {
+    en: 'The passport validity period is less than 3 months. If you have been reissued a new passport, please report the change of passport and submit the new passport. If you have applied for a new passport but have not received it yet, please fill out and submit the "Confirmation of Residence within Passport Period" from HiKorea. (How to download: HiKorea > Petition Forms > Confirmation of Residence within Passport Period)',
+    zh: '护照有效期不足3个月。如果您已重新办理了新护照，请在申报新护照变更后提交新护照。如果您正在申请新护照且尚未拿到，请在HiKorea填写并提交《护照期限内滞留确认书》。（下载方法：HiKorea网站 > 民事表格 > 护照期限内滞留确认书）',
+    ja: 'パスポートの有効期限が3ヶ月未満です。新しいパスポートの再発行を受けた場合は、新パスポートの変更申告を行った後、新しいパスポートをご提出ください。新しいパスポートを申請中でまだ受け取っていない場合は、HiKoreaにて「パスポート期間内滞在確認書」を作成の上、ご提出ください。（ダウンロード方法：HiKorea > 民願書式 > パスポート期間内滞在確認書）',
+    vi: 'Thời hạn hộ chiếu của bạn còn dưới 3 tháng. Nếu bạn đã được cấp hộ chiếu mới, vui lòng khai báo thay đổi hộ chiếu và nộp hộ chiếu mới. Trong trường hợp bạn đang xin cấp hộ chiếu mới nhưng chưa nhận được, vui lòng viết và nộp "Giấy xác nhận thời gian cư trú trong thời hạn hộ chiếu" từ HiKorea. (Cách tải về: HiKorea > Mẫu đơn khiếu nại > Giấy xác nhận thời gian cư trú trong thời hạn hộ chiếu)',
+    ne: 'राहदानीको वैधता अवधि ३ महिनाभन्दा कम छ। यदि तपाईंले नयाँ राहदानी पुनः जारी गर्नुभएको छ भने, कृपया राहदानी परिवर्तनको रिपोर्ट गर्नुहोस् र नयाँ राहदानी पेश गर्नुहोस्। यदि तपाईंले नयाँ राहदानीका लागि आवेदन दिनुभएको छ तर प्राप्त गर्नुभएको छैन भने, कृपया HiKorea बाट "राहदानी अवधिभित्र बस्ने अनुमति पुष्टि पत्र" भरेर पेश गर्नुहोस्। (डाउनलोड गर्ने तरिका: HiKorea > निवेदन फारम > राहदानी अवधिभित्र बस्ने अनुमति पुष्टि पत्र)',
+    uz: 'Pasportingizning amal qilish muddati 3 oydan kam qolgan. Agar yangi pasport olgan bo‘lsangiz, iltimos, pasport ma’lumotlari o‘zgarganligi haqida xabar berganingizdan so‘ng yangi pasportni taqdim eting. Agar yangi pasport olish uchun ariza bergan bo‘lsangiz, lekin hali uni olmagan bo‘lsangiz, HiKorea orqali “Pasport amal qilish muddati davomida bo‘lishni tasdiqlash hujjati”ni to‘ldirib, taqdim eting. (Yuklab olish tartibi: HiKorea > Ariza shakllari > Pasport amal qilish muddati davomida bo‘lishni tasdiqlash hujjati)',
+    mn: 'Гадаад паспортын хүчинтэй хугацаа 3 сараас бага байна. Хэрэв шинэ гадаад паспорт дахин авсан бол шинэ паспортын өөрчлөлтийг бүртгүүлсний дараа шинэ паспортоо ирүүлнэ үү. Хэрэв шинэ паспорт захиалсан бөгөөд хараахан авч амжаагүй байгаа бол Hikorea-гаас Гадаад паспортын хугацаан дахь оршин суух тодорхойлолтыг бөглөж ирүүлнэ үү. (Татах арга: Hikorea > Өргөдлийн маягт > Паспортын хугацаан дахь оршин суух тодорхойлолт)'
+  },
+  '[계속되는 보완으로 비교적 급한 경우]': {
+    en: 'Repeatedly submitting photos that do not meet the requirements may delay the processing of your Residence Card (RC). Please be sure to submit a compliant ID photo.'
+  },
+  '[머리카락으로 인해 귀가 안보일 경우]': {
+    en: 'Please submit an ID photo that clearly shows both ears by tucking your hair behind them.'
+  },
+  '[인물 주위가 불명확 할 경우]': {
+    en: 'The photo you submitted cannot be used because the area around the person appears blurry. For smooth processing, please resubmit a high-resolution ID photo without any blur or edit effects.'
+  },
+  '[연대전용-재학증명서 제출사항]': {
+    en: "Yonsei University's CERTIFICATE OF ENROLLMENT is a certificate of student records. Please submit the CERTIFICATE OF ATTENDANCE, which is the enrollment certificate. Please submit it in English.",
+    zh: "延世大学的 'CERTIFICATE OF ENROLLMENT' 是在籍证明书。请提交作为在读证明书的 'CERTIFICATE OF ATTENDANCE'。（请提交英文版本。）",
+    ja: "延世大学の 'CERTIFICATE OF ENROLLMENT' は在籍証明書にあたります。在学証明書である 'CERTIFICATE OF ATTENDANCE' をご提出ください。（英文でのご提出をお願いいたします。）",
+    vi: 'CERTIFICATE OF ENROLLMENT của Đại học Yonsei là giấy xác nhận hồ sơ sinh viên. Vui lòng nộp CERTIFICATE OF ATTENDANCE, là giấy chứng nhận đang học. Vui lòng nộp bằng tiếng Anh.',
+    ne: 'योनसे विश्वविद्यालयको CERTIFICATE OF ENROLLMENT विद्यार्थी अभिलेख प्रमाणपत्र हो। कृपया अध्ययनरत प्रमाणपत्रको रूपमा CERTIFICATE OF ATTENDANCE पेश गर्नुहोस्। कृपया अंग्रेजी भाषामा पेश गर्नुहोस्।',
+    uz: "Yonsei universitetining CERTIFICATE OF ENROLLMENT hujjati talabaning universitetda qayd etilganligi to‘g‘risidagi ma’lumotnomaga mos keladi. Iltimos, talabaning universitetda o‘qiyotganligini tasdiqlovchi CERTIFICATE OF ATTENDANCE hujjatini taqdim eting. Hujjatni ingliz tilida taqdim eting.",
+    mn: 'Ёнсей Их Сургуулийн хувьд "Certificate of Enrollment" нь тухайн сургуулийн оюутан болохыг нотлох баримт бичигтэй дүйцнэ. Иймд "Certificate of Attendance" (суралцаж буйг нотлох баримт)-ыг ирүүлнэ үү. (Англи хэл дээр ирүүлнэ үү.)'
+  },
+  '[거주제공확인서에 거주 숙소 제공일이 비어있는 경우]': {
+    en: "On the Confirmation of Residence/Accommodation, the start date of accommodation is left blank. Please fill in the same date as the date of document's creation date."
+  },
+  '[거주제공확인서 날짜]': {
+    en: 'The document preparation date must be set after the date of residence/accommodation provision. Please correct the current date of [월/일] to [월/일].',
+    zh: '文件的开具日期必须为居住/住宿提供日之后。请将目前显示为 [월/일] 的日期修改为 [월/일]。',
+    ja: '書類作成日は居住/宿泊提供日以降に設定される必要があります。現在 [월/일] となっている日付を [월/일] に修正してください。',
+    vi: 'Ngày viết tài liệu phải được thiết lập sau ngày cung cấp nơi cư trú/chỗ ở. Vui lòng sửa đổi ngày hiện tại trong tài liệu là [월/일] thành [월/일].',
+    ne: 'कागजात तयार गरिएको मिति बसोबास/होस्टेल उपलब्ध गराइएको मितिपछि सेट गरिनुपर्छ। कृपया हालको [월/일] को मितिलाई [월/일] मा सच्याउनुहोस्।',
+    uz: 'Hujjatni to‘ldirish sanasi yashash joyi taqdim etilgan sanadan keyin bo‘lishi kerak. Iltimos, hozirgi [월/일] sanasini [월/일] sanasiga o‘zgartiring.',
+    mn: 'Баримт бичгийн огноог оршин суух/байр олгох хугацаа эхлэх өдөр эсвэл түүнээс хойших өдрөөр тохируулах шаардлагатай. Одоогийн огноог [Сар/Өдөр]-өөс [Сар/Өдөр] болгон өөрчилнө үү.'
+  }
+};
+DATA.categories.forEach(category => {
+  (category.groups || [{ items: category.items || [] }]).forEach(group => {
+    (group.items || []).forEach(item => {
+      const override = PDF_TRANSLATION_OVERRIDES[item.condition];
+      if (override) item.t = { ...item.t, ...override };
+    });
+  });
+});
 
 const KOREAN_PROOFREAD_REPLACEMENTS = [
   ['제출해주세요', '제출해 주세요'],
