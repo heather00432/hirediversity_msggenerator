@@ -487,7 +487,8 @@
 const DATA = JSON.parse(document.getElementById('app-data').textContent);
 const PDF_TRANSLATION_OVERRIDES = {
   '[공통]': {
-    en: 'Please submit the entire document so that the top section is not cut off.'
+    en: 'Please submit the entire document so that the top section is not cut off.',
+    uz: "Iltimos, yuqori qismi kesilmagan to'liq hujjatni taqdim eting."
   },
   '[빛 번짐]': {
     en: 'There is some information that cannot be verified. Please resubmit so that all information can be verified.',
@@ -534,6 +535,26 @@ const PDF_TRANSLATION_OVERRIDES = {
     uz: "Iltimos, sochlaringizni ikkala qulog'ingiz orqasiga o'tkazib, quloqlaringiz aniq ko'rinadigan fotosuratni topshiring.",
     mn: 'Үсээ чихнийхээ ард хийж тод харагдахаар паспортын зургаа илгээнэ үү.'
   },
+  '[증명사진 AI 사용한 경우]': {
+    vi: 'Hình ảnh có dấu hiệu đã được tạo hoặc chỉnh sửa bằng AI. Vì đây là ảnh sẽ được sử dụng cho Thẻ đăng ký người nước ngoài (RC), vui lòng nộp lại ảnh không sử dụng AI.',
+    uz: "Rasm AI (sun'iy intellekt) orqali yaratilgan yoki tahrirlanganga o'xshaydi. Ushbu rasm Chet ellikni ro'yxatga olish guvohnomasi (RC) uchun ishlatiladigan rasm bo‘lganligi sababli, iltimos, AI yordamida yaratilmagan yoki tahrirlanmagan fotosuratni qayta topshiring.",
+    mn: 'Энэ нь хиймэл оюун ухаанаар үүсгэгдсэн эсвэл өөрчлөгдсөн зураг бололтой. Энэ зургийг таны Гадаадын иргэний бүртгэлийн картанд (RC) ашиглах тул хиймэл оюун ухаанаар боловсруулагдаагүй зургийг илгээнэ үү.'
+  },
+  '[화장이 너무 과한 경우]': {
+    vi: 'Hình ảnh bạn đã nộp không thể sử dụng do gặp khó khăn trong việc xác nhận danh tính thực tế. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại ảnh thẻ giống với thực tế nhất và tránh trang điểm quá đậm.',
+    uz: "Topshirgan rasmingiz orqali shaxsingizni aniqlash biroz qiyin bo'lishi mumkinligi sababli undan foydalanib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, ortiqcha pardozsiz (makiyajsiz) va haqiqiy qiyofangizga mos keladigan fotosuratni qayta topshiring.",
+    mn: 'Таны илгээсэн зургийг таныг танихад хэцүү байж болзошгүй тул ашиглах боломжгүй. Баримт бичгийг жигд боловсруулахын тулд хэт их нүүр будалт хийхээс зайлсхийж, бодит төрхийг тань зөв тусгасан паспортын хэв маягийн зургийг дахин илгээвэл бид талархах болно.'
+  },
+  '[한쪽으로 쏠려있는 경우]': {
+    vi: 'Ảnh bạn đã nộp không thể sử dụng do khuôn mặt không nằm ở vị trí trung tâm. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại ảnh thẻ có khuôn mặt nằm chính giữa và nhìn thẳng về phía trước.',
+    uz: "Topshirgan rasmingizda yuzingiz markazda joylashmaganligi sababli undan foydalanib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, yuzingiz aynan markazda joylashgan va to'g'ri qarab tushirilgan fotosuratni qayta topshiring.",
+    mn: 'Ирүүлсэн цээж зураг нь нүүр голдоо байрлаагүй тул ашиглах боломжгүй байна. Бичиг баримтыг саадгүй шалгахын тулд нүүр нь яг голдоо байрласан, урагшаа эгц харсан цээж зургийг дахин ирүүлнэ үү.'
+  },
+  '[양쪽눈썹이 머리카락으로 인해 안보일 경우]': {
+    vi: 'Để đảm bảo việc xác nhận danh tính, cả hai lông mày phải được nhìn thấy rõ ràng. Ảnh bạn đã nộp không thể sử dụng do tóc mái che mất lông mày, vui lòng vén tóc mái sang hai bên và nộp lại ảnh thẻ để lộ rõ cả hai lông mày.',
+    uz: "Shaxsingizni aniqlash uchun ikkala qoshingiz ham aniq ko'rinishi shart. Topshirgan rasmingizda oldingi sochlaringiz qoshlaringizni to'sib turgani sababli undan foydalanib bo'lmaydi. Iltimos, oldingi sochlaringizni tartibga keltirib, ikkala qoshingiz aniq ko'rinadigan fotosuratni qayta topshiring.",
+    mn: 'Таныг танихын тулд хоёр хөмсөг тодорхой харагдаж байх шаардлагатай. Одоо ирүүлсэн зураг дээр таны хөмсөг үсээр хаагдсан тул ашиглах боломжгүй байна. Иймд үсээ янзалж, хоёр хөмсөг тань сайн харагдах цээж зургийг дахин ирүүлнэ үү.'
+  },
   '[인물 주위가 불명확 할 경우]': {
     en: 'The photo you submitted cannot be used because the area around the person appears blurry. For smooth processing, please resubmit a high-resolution ID photo without any blur or edit effects.',
     zh: '由于照片中人物周围处理得比较模糊，无法使用。为了顺利办理手续，请重新提交一张没有模糊或修图效果的高清证件照，谢谢。',
@@ -543,14 +564,100 @@ const PDF_TRANSLATION_OVERRIDES = {
     uz: "Rasmda inson atrofidagi qism xiralashtirilgani sababli uni ishlatib bo'lmaydi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, xiralashtirish yoki tahrirlash effektlari bo'lmagan yuqori sifatli fotosuratni qayta topshiring.",
     mn: 'Цээж зураг дээрх хүний эргэн тойрон сарнисан (бүүдгэр) байгаа тул ашиглах боломжгүй. Бичиг баримтыг саадгүй бүрдүүлэхийн тулд бүүдгэржүүлсэн болон засварласан эффектгүй, өндөр нягтралтай (чанартай) цээж зургийг дахин ирүүлнэ үү.'
   },
+  '[개강 전 발급 받은 서류]': {
+    vi: 'Vui lòng nộp Giấy chứng nhận đang theo học được cấp sau ngày khai giảng, không phải giấy chứng nhận cấp trước ngày khai khảng.',
+    uz: 'Iltimos, semestr boshlanishidan oldin berilgan emas, balki semestr boshlangan sanada yoki undan keyin berilgan o‘qishga qabul qilinganlik (yoki o‘qiyotganlik) haqidagi ma’lumotnomani taqdim eting.',
+    mn: 'Семестр эхлэхээс өмнө олгосон баримт бичиг биш семестр эхэлсний дараа олгосон суралцаж буйг нотлох тодорхойлолтыг ирүүлнэ үү.'
+  },
+  '[선명도가 부족한 경우]': {
+    vi: 'Do chất lượng ảnh và độ nét không tốt nên khó xác nhận chính chủ, vui lòng nộp lại ảnh. Vui lòng nộp file ảnh gốc rõ nét để có thể xác minh danh tính.',
+    ne: 'फोटोको स्पष्टता नपुगेकाले अक्षरहरू स्पष्टसँग पढ्न/पहिचान गर्न गाह्रो भएको छ, त्यसैले कृपया पुनः पेश गरिदिनुहोला। कृपया स्पष्ट रूपमा पहिचान गर्न सकिने मूल (Original) फोटो पेश गर्नुहोला।',
+    uz: "Rasmning tiniqligi yetarli emasligi sababli shaxsingizni aniqlash qiyin. Iltimos, qayta topshiring. Shaxsingiz aniq ko'rinadigan original rasmni taqdim eting.",
+    mn: 'Зургийн чанар (тод) муу байгаа тул тухайн таныг тодорхойлоход хүндрэлтэй байна. Иймд дахин ирүүлнэ үү. Тод, сайн харагдах эх зургаар ирүүлнэ үү.'
+  },
+  '[입학일자가 명시되어 있지 않을 경우]': {
+    vi: 'Giấy chứng nhận đang học (Certificate of Enrollment) bạn nộp bắt buộc phải có ghi rõ ngày nhập học. Vui lòng kiểm tra lại giấy tờ và nộp lại bản có ghi ngày nhập học. Xin cảm ơn.',
+    uz: 'Siz taqdim etadigan o‘qish joyidan ma’lumotnomada (Certificate of Enrollment) o‘qishga qabul qilingan sana albatta ko‘rsatilgan bo‘lishi kerak. Iltimos, hujjatni tekshirib, o‘qishga qabul qilingan sana ko‘rsatilgan ma’lumotnomani qayta taqdim eting.',
+    mn: 'Таны ирүүлэх суралцаж буйг нотлох баримт бичигт элссэн огноо тодорхой тусгагдсан байх шаардлагатай. Тус баримт бичгийг шалгаж, элссэн огноог багтаасан баримт бичгийг дахин ирүүлнэ үү.'
+  },
   '[연대전용-재학증명서 제출사항]': {
     en: "Yonsei University's CERTIFICATE OF ENROLLMENT is a certificate of student records. Please submit the CERTIFICATE OF ATTENDANCE, which is the enrollment certificate. Please submit it in English.",
     zh: "延世大学的 'CERTIFICATE OF ENROLLMENT' 是在籍证明书。请提交作为在读证明书的 'CERTIFICATE OF ATTENDANCE'。（请提交英文版本。）",
     ja: "延世大学の 'CERTIFICATE OF ENROLLMENT' は在籍証明書にあたります。在学証明書である 'CERTIFICATE OF ATTENDANCE' をご提出ください。（英文でのご提出をお願いいたします。）",
     vi: 'CERTIFICATE OF ENROLLMENT của Đại học Yonsei là giấy xác nhận hồ sơ sinh viên. Vui lòng nộp CERTIFICATE OF ATTENDANCE, là giấy chứng nhận đang học. Vui lòng nộp bằng tiếng Anh.',
     ne: 'योनसे विश्वविद्यालयको CERTIFICATE OF ENROLLMENT विद्यार्थी अभिलेख प्रमाणपत्र हो। कृपया अध्ययनरत प्रमाणपत्रको रूपमा CERTIFICATE OF ATTENDANCE पेश गर्नुहोस्। कृपया अंग्रेजी भाषामा पेश गर्नुहोस्।',
-    uz: "Yonsei universitetining CERTIFICATE OF ENROLLMENT hujjati talabaning universitetda qayd etilganligi to‘g‘risidagi ma’lumotnomaga mos keladi. Iltimos, talabaning universitetda o‘qiyotganligini tasdiqlovchi CERTIFICATE OF ATTENDANCE hujjatini taqdim eting. Hujjatni ingliz tilida taqdim eting.",
+    uz: 'Yonsei universitetining CERTIFICATE OF ENROLLMENT hujjati talabaning universitetda qayd etilganligi to‘g‘risidagi ma’lumotnomaga mos keladi. Iltimos, talabaning universitetda o‘qiyotganligini tasdiqlovchi CERTIFICATE OF ATTENDANCE hujjatini taqdim eting. Hujjatni ingliz tilida taqdim eting.',
     mn: 'Ёнсей Их Сургуулийн хувьд "Certificate of Enrollment" нь тухайн сургуулийн оюутан болохыг нотлох баримт бичигтэй дүйцнэ. Иймд "Certificate of Attendance" (суралцаж буйг нотлох баримт)-ыг ирүүлнэ үү. (Англи хэл дээр ирүүлнэ үү.)'
+  },
+  '[스캔상태가 불선명할 경우]': {
+    vi: 'Loại giấy tờ bạn nộp là đúng yêu cầu, nhưng do bản scan không đủ rõ nên khó kiểm tra. Vui lòng scan lại và nộp bản tài liệu rõ ràng hơn.',
+    uz: 'Siz taqdim etgan hujjat turi to‘g‘ri, ammo skanerlangan hujjatning sifati yetarlicha aniq emasligi sababli uni ko‘rib chiqish qiyin. Iltimos, ushbu hujjatni aniq va tiniq qilib qayta skanerlab, qaytadan taqdim eting.',
+    mn: 'Таны ирүүлсэн баримт бичгийн төрөл зөв боловч скан хийсэн чанар нь муу тул хянахад хүндрэлтэй байна. Баримт бичгийг тод харагдахаар дахин скан хийж, дахин илгээнэ үү.'
+  },
+  '[교육비 납입 내용 요청]': {
+    vi: 'Vui lòng nộp chứng nhận nộp tiền có ghi rõ chi tiết thanh toán học phí.',
+    uz: 'Iltimos, o‘quv to‘lovi to‘langanligi ko‘rsatilgan to‘lov to‘g‘risidagi ma’lumotnomani taqdim eting.',
+    mn: 'Сургалтын төлбөрийн төлснийг тодорхойлсон төлбөр төлсөн тодорхойлолтыг ирүүлнэ үү.'
+  },
+  '[영수증 제출]': {
+    vi: 'Vui lòng nộp "Giấy chứng nhận nộp học phí" chứ không phải biên lai đóng tiền.',
+    uz: 'Kvitansiya emas, balki “O‘qish to‘lovi to‘langanligi to‘g‘risidagi ma’lumotnoma”ni taqdim eting.',
+    mn: "Баримтын оронд 'Сургалтын төлбөр төлсөн тодорхойлолт'-г ирүүлнэ үү."
+  },
+  '[다른 학기 등록금 납입 증명서를 제출한 경우]': {
+    vi: 'Vui lòng nộp Giấy chứng nhận nộp học phí học kỳ 2 năm 2026.',
+    uz: 'Iltimos, 2026-yil 2-semestr uchun kontrakt to‘lovi to‘langanligi to‘g‘risidagi ma’lumotnomani taqdim eting.',
+    mn: '2026-2 семестрийн сургалтын  төлбөр төлсөн тодорхойлолтыг ирүүлнэ үү.'
+  },
+  '[자필 사유서 작성 안내]': {
+    vi: 'Vui lòng viết bản giải trình viết tay chi tiết và chân thật. Không có biểu mẫu cố định, tuy nhiên bắt buộc phải có tên học sinh, chữ ký viết tay và ngày viết.',
+    uz: 'Iltimos, batafsil va samimiy tarzda qo‘lda yozilgan tushuntirish xatini tayyorlang. Maxsus shakl mavjud emas. Talabaning ismi, qo‘lda yozilgan imzosi va hujjat yozilgan sana albatta ko‘rsatilishi kerak.',
+    mn: 'Дэлгэрэнгүй, чин сэтгэлээсээ бичсэн тайлбар бичгийг ирүүлнэ үү. Маягт байхгүй бөгөөд оюутны нэр, гараар бичсэн гарын үсэг, бөглөсөн огноо зэргийг багтаасан байх ёстой.'
+  },
+  '[분량 미충족]': {
+    vi: 'Vui lòng viết tay ít nhất một nửa trang giấy A4.',
+    uz: 'Iltimos, A4 formatdagi qog‘ozning kamida yarmini qo‘lda yozib to‘ldiring.',
+    mn: 'А4 хуудасны талаас илүү гараар бичиж ирүүлнэ үү.'
+  },
+  '[거래주소-기재주소 다른경우]': {
+    vi: 'Địa chỉ cư trú hiện tại đăng ký trên HiKorea khác với địa chỉ cư trú trong tài liệu . Vui lòng khai báo thay đổi nơi cư trú tại trung tâm hành chính công hoặc qua HiKorea, sau đó nộp mặt sau của Thẻ đăng ký nước ngoài. Hoặc sau khi được phê duyệt, vui lòng nộp Giấy xác nhận đã được phê duyệt.',
+    uz: 'Hozir HiKorea tizimida ro‘yxatdan o‘tgan yashash manzili yashash joyi hujjatidagi manzildan farq qiladi. Iltimos, mahalla idorasi (Jumin Center) yoki HiKorea orqali yashash manzilingizni o‘zgartirish haqida xabar berganingizdan so‘ng, Chet ellikni ro‘yxatga olish guvohnomangizning orqa tomonini taqdim eting yoki ruxsat olganingizdan keyin ruxsat tasdiqnomasini taqdim eting.',
+    mn: 'HiKorea системд бүртгэлтэй одоогийн оршин суух хаяг нь таны бүрдүүлсэн баримт бичигт заасан хаягаас зөрүүтэй байна. Иймд хаягийн өөрчлөлтийг харьяа орон нутгийн захиргааны төвд эсвэл HiKorea-гаар дамжуулан мэдэгдэж, Гадаадын иргэний үнэмлэхний ар талын хуулбарыг ирүүлнэ үү. Эсвэл холбогдох зөвшөөрлийг авсны дараа баталгаажуулах бичгийг ирүүлнэ үү.'
+  },
+  '[기숙사 거주 확인서 - 이화여자대학교]': {
+    vi: 'Chúng tôi được biết rằng tài liệu ký túc xá của Trường Đại học Nữ sinh Ewha có hình mờ (chữ bóng) của trường ở giữa. Vui lòng tải lại tài liệu sao cho con dấu chính thức của ban quản lý ký túc xá hiển thị rõ ràng hơn. Hãy nhận tài liệu chính thức từ nhà trường và nộp lại.',
+    uz: "Ewha Womans universitetining yotoqxona hujjatining o'rtasida universitet suv belgisi (watermark) borligini bilamiz. Yotoqxona rahbarining rasmiy muhri aniqroq ko'rinishi uchun hujjatni qayta yuklashingizni so'raymiz. Iltimos, universitetdan rasmiy ravishda berilgan hujjatni olib taqdim eting.",
+    mn: 'Эхва эмэгтэйчүүдийн их сургуулийн дотуур байрны баримт бичгийн голд тус сургуулийн усан хээ (сүүдэрлэгдсэн лого) байдаг. Дотуур байрны эрхлэгчийн албан ёсны тамга тод харагдахаар баримт бичгийг дахин илгээнэ үү. Их сургуулиас албан ёсоор олгосон баримт бичгийг ирүүлэхийг хүсье.'
+  },
+  '[임대차계약서 만료 - 계약기간 30일 미만]': {
+    vi: 'Thời hạn hợp đồng thuê nhà còn lại dưới 30 ngày. Vui lòng nộp hợp đồng gia hạn hoặc biên lai thanh toán tiền nhà tháng gần nhất.',
+    uz: 'Ijara shartnomasi muddati tugashiga 30 kundan kam vaqt qoldi. Iltimos, muddatni uzaytirish shartnomasini yoki eng so‘nggi oylik ijara haqi kvitansiyasini taqdim eting.',
+    mn: 'Түрээсийн гэрээний хугацаа дуусахад 30 хүрэхгүй хоног үлдээд байна. Түрээсийн хугацааг сунгах гэрээ эсвэл түрээсийн төлбөр төлсөн хамгийн сүүлийн баримтыг ирүүлнэ үү.'
+  },
+  '[임대차계약서 만료 - 기간 만료됨]': {
+    vi: 'Hợp đồng thuê nhà đã hết hạn. Vui lòng nộp hợp đồng gia hạn hoặc biên lai tiền nhà hàng tháng gần nhất.',
+    uz: 'Ijara shartnomasi muddati tugadi. Iltimos, muddatni uzaytirish shartnomasini yoki eng so‘nggi oylik ijara haqi kvitansiyasini taqdim eting.',
+    mn: 'Түрээсийн гэрээний хугацаа дууссан байна. Түрээсийн хугацааг сунгасан гэрээ эсвэл түрээсийн төлбөр төлсөн хамгийн сүүлийн үеийн баримтыг ирүүлнэ үү.'
+  },
+  '[부동산계약서에 학생이름이 없는 경우]': {
+    vi: 'Không thể tìm thấy tên của bạn trên hợp đồng thuê nhà đã nộp. Để quá trình xử lý hồ sơ diễn ra thuận lợi, vui lòng nộp lại hợp đồng có ghi rõ tên của bạn.',
+    uz: "Siz topshirgan ijara shartnomasida ism-sharifingizni aniqlab bo'lmadi. Hujjatlarni muammosiz rasmiylashtirish uchun, iltimos, ism-sharifingiz aniq ko'rsatilgan ijara shartnomasini qayta topshirishingizni so'raymiz.",
+    mn: 'Таны ирүүлсэн түрээсийн гэрээнд тухайн оюутны нэр тусгагдаагүй байна. Баримт бичгийн боловсруулалтыг саадгүй явуулахын тулд оюутны нэрийг тодорхой заасан гэрээг дахин ирүүлнэ үү.'
+  },
+  '[영수증에 일정 정보가 없는 경우]': {
+    vi: 'Đối với trường hợp biên lai không có thông tin cá nhân, vui lòng ghi tên bạn trên biên lai và nộp lại.',
+    uz: 'Iltimos, siz topshirgan kvitansiyaga talabaning ismini yozib, qayta topshiring.',
+    mn: 'Илгээсэн баримтан дээр өөрийн нэрийг бичээд ирүүлнэ үү.'
+  },
+  '[신분증, 임대차계약서(거주제공자)를 제공하지 않는 33M2 호스트 관련]': {
+    vi: 'Tất cả các tài liệu này là bắt buộc đối với bất kỳ ai cung cấp chỗ ở cho người nước ngoài. Các tài liệu này chỉ nộp duy nhất cho Cục Quản lý Xuất nhập cảnh và Cư trú - Bộ Tư pháp(gọi tắt là Cục Xuất nhập cảnh) và cam kết không sử dụng cho mục đích nào khác. Nếu phía ông/bà OOO không cung cấp các tài liệu dưới đây, nơi ở hiện tại sẽ không đủ điều kiện pháp lý để người nước ngoài cư trú. Khi đó, bạn nên chủ động tìm chỗ ở mới.',
+    uz: 'Chet ellik kishiga turar joy berayotgan har bir kishi ushbu hujjatlarni topshirishi majburiydir. Ushbu hujjatlar faqatgina Koreya Respublikasi Adliya vazirligining Immigratsiya va chet elliklar siyosati boshqarmasiga taqdim etiladi va boshqa maqsadlarda foydalanilmaydi. Agar OOO ushbu hujjatlarni taqdim etmasa, ushbu turar joy “chet elliklar yashashi mumkin bo‘lmagan turar joy” deb hisoblanadi, shuning uchun yangi turar joy qidirishingizni tavsiya qilamiz.',
+    mn: "Гадаад улсын иргэнийг байрлуулах үйлчилгээ үзүүлж буй этгээд нь эдгээр баримт бичгийг заавал ирүүлэх шаардлагатай. Эдгээр баримт бичгийг зөвхөн Солонгосын Цагаачлалын албанд (Хууль зүйн яам) хүргүүлэх бөгөөд өөр ямар нэгэн зорилгоор ашиглахгүй болно. Хэрэв OOO нь доор дурдсан баримт бичгийг ирүүлээгүй тохиолдолд тухайн байрыг 'гадаад иргэн амьдрахад тохиромжгүй' гэж үзэх тул өөр байр хайхыг зөвлөж байна."
+  },
+  '[엔코스테이 영수증과 보완이 필요한 다른 부가적인 서류를 낸 경우]': {
+    vi: 'Vui lòng gửi Hợp đồng thuê nhà (file PDF) được cấp bởi Enkorstay. Việc nộp hợp đồng chính thức sẽ giúp quá trình phê duyệt diễn ra thuận lợi và nhanh chóng hơn.',
+    uz: 'Iltimos, Enkorstay tomonidan berilgan ijara shartnomasini (PDF) taqdim eting. Rasmiy shartnomani topshirish tasdiqlash jarayonining yanada muammosiz va tezroq amalga oshirilishiga yordam beradi.',
+    mn: '"Enkorstay-аас авсан түрээсийн гэрээг (PDF) өгнө үү. Албан ёсны гэрээг ирүүлснээр үйл явц илүү жигд, хурдан явагдах болно."'
   },
   '[거주제공확인서에 거주 숙소 제공일이 비어있는 경우]': {
     en: "On the Confirmation of Residence/Accommodation, the start date of accommodation is left blank. Please fill in the same date as the date of document's creation date.",
@@ -569,6 +676,15 @@ const PDF_TRANSLATION_OVERRIDES = {
     ne: 'कागजात तयार गरिएको मिति बसोबास/होस्टेल उपलब्ध गराइएको मितिपछि सेट गरिनुपर्छ। कृपया हालको [월/일] को मितिलाई [월/일] मा सच्याउनुहोस्।',
     uz: 'Hujjatni to‘ldirish sanasi yashash joyi taqdim etilgan sanadan keyin bo‘lishi kerak. Iltimos, hozirgi [월/일] sanasini [월/일] sanasiga o‘zgartiring.',
     mn: 'Баримт бичгийн огноог оршин суух/байр олгох хугацаа эхлэх өдөр эсвэл түүнээс хойших өдрөөр тохируулах шаардлагатай. Одоогийн огноог [Сар/Өдөр]-өөс [Сар/Өдөр] болгон өөрчилнө үү.'
+  },
+  '[거주제공확인서에 작성일이 비어있는 경우]': {
+    vi: 'Ngày lập Giấy xác nhận cung cấp nơi cư trú đang để trống. Vui lòng ghi ngày sau ngày cung cấp chỗ ở.',
+    uz: 'Turar joyni tasdiqlovchi hujjatda sana ko‘rsatilmagan. Iltimos, turar joyda yashash boshlanadigan sanadan keyingi sanani kiriting.',
+    mn: 'Оршин суугаа газраар хангах хуудсанд бөглөсөн огноо нь хоосон байна. Орон байр олгосон өдрөөс хойш огноог оруулна уу.'
+  },
+  '[실물서류 보완사유]': {
+    vi: 'Thủ tục xét duyệt xuất nhập cảnh có thể bị chậm trễ, vui lòng nộp hồ sơ càng sớm càng tốt.',
+    mn: 'Цагаачлалын албаны бүртгэл, зөвшөөрлийн ажиллагаа саатаж болзошгүй тул аль болох хурдан ирүүлнэ үү.'
   },
   '[컬러렌즈를 착용한 경우]': {
     en: 'Photos wearing colored contact lenses cannot be accepted as they interfere with personal identification. For smooth processing, please resubmit an ID photo without colored contacts.',
@@ -689,8 +805,8 @@ const monthlyStudyPlanItem = {
     ja: '単に試験を受験したという事実を列挙するだけでは、具体的な学習計画とは言えません。試験対策のために月別の具体的な学習計画を含めて「月別学習計画」を作成してください。',
     vi: 'Việc chỉ liệt kê thực tế đã tham gia kỳ thi không thể coi là một kế hoạch học tập cụ thể. Vui lòng lập "Kế hoạch học tập theo tháng" bao gồm các kế hoạch cụ thể cho từng tháng để chuẩn bị cho kỳ thi.',
     ne: "केवल परीक्षा दिएको तथ्य मात्र सूचीबद्ध गर्नुलाई ठोस अध्ययन योजना मान्न सकिँदैन। परीक्षाको तयारीका लागि महिनापिच्छे अध्ययन गर्ने विशिष्ट योजना समावेश गरी 'मासिक अध्ययन योजना' तयार पार्नुहोस्।",
-    uz: "Shunchaki imtihonda qatnashganlik faktini keltirish aniq o'quv rejasi deb hisoblanmaydi. Imtihonga tayyorgarlik ko'rish uchun har oyda amalga oshiriladigan aniq rejani o'z ichiga olgan 'Oylik o'quv rejasi'ni tuzib bering.",
-    mn: 'Зөвхөн шалгалт өгсөн тухайгаа жагсаан бичих нь тодорхой суралцах төлөвлөгөө болж чадахгүй. Шалгалтад бэлтгэхийн тулд сар бүр хичээллэх тодорхой төлөвлөгөөг тусгасан "Сарын суралцах төлөвлөгөө"-г боловсруулж бичнэ үү.'
+    uz: 'Faqat imtihonda qatnashganlik faktlarini sanab o‘tish aniq o‘quv rejasi deb hisoblanmaydi. Iltimos, imtihonga tayyorgarlik ko‘rish uchun har bir oyda amalga oshiriladigan aniq o‘quv rejasini kiritgan holda “Oylik o‘quv rejasi”ni tuzing.',
+    mn: 'Зөвхөн өгөх шалгалтуудаа жагсаан бичих нь сургалтын бодит төлөвлөгөө болохгүй. Шалгалтад бэлтгэх явцдаа сар бүр хийх тодорхой ажлуудыг тусгасан "сар бүрийн сургалтын төлөвлөгөө"-г ирүүлнэ үү.'
   }
 };
 
